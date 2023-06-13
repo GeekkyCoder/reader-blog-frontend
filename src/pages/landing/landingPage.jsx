@@ -1,9 +1,16 @@
-import { Box, Container, Typography, Button, Stack } from "@mui/material";
+import { Box, Container, Typography, Button } from "@mui/material";
 
 import LandingPageImage from "../../Assets/landing-page-main.jpg";
 import { AwesomeText, ButtonsContainer } from "./LandingPageStyles";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { userSelectorReducer } from "../../store/user/userSelector";
 
 export const LandingPage = () => {
+  const navigate = useNavigate();
+
+  const user = useSelector(userSelectorReducer)
+
   return (
     <>
       <Container sx={{ mt: "2em" }}>
@@ -51,16 +58,17 @@ export const LandingPage = () => {
               >
                 Blogs
               </Button>
-              <Button
+              {!user && <Button
                 sx={{
                   width: { xs: "100%", sm: "150px" },
                   marginTop: { xs: "20px" },
                 }}
                 variant="contained"
                 color="primary"
+                onClick={() => navigate("/auth")}
               >
                 Sign up
-              </Button>
+              </Button>}
             </ButtonsContainer>
           </Box>
           <Box flex={1} sx={{ order: { xs: 1, sm: 2 } }}>
@@ -68,7 +76,7 @@ export const LandingPage = () => {
               style={{ borderRadius: { xs: 0, sm: "25px" } }}
               width={"100%"}
               src={LandingPageImage}
-              alt="landing-page-image"
+              alt="landing-page"
             />
           </Box>
         </Box>

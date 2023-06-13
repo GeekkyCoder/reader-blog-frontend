@@ -1,4 +1,4 @@
-import {Box, Stack, Typography, styled} from "@mui/material"
+import {Stack, Typography, styled} from "@mui/material"
 
 export const AwesomeText = styled(Typography)(({theme}) => ({
     [theme.breakpoints.down('sm')]:{

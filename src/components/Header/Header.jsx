@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import {
   AppBar,
   Avatar,
@@ -8,25 +10,34 @@ import {
   Tooltip,
   Menu,
   MenuItem,
-  Typography,
   Button,
 } from "@mui/material";
 
-import {
-  HeaderContainer,
-  LogoText,
-  SignUpButton,
-  StyledToolbar,
-  theme,
-} from "./Header.styles";
+import { LogoText, SignUpButton, StyledToolbar, theme } from "./Header.styles";
 
 import { ThemeProvider as ButtonThemeProvider } from "@mui/material";
+import { userSelectorReducer } from "../../store/user/userSelector";
+import { useSelector } from "react-redux";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const user = useSelector(userSelectorReducer);
+
+  const navigate = useNavigate();
+
   const handleMenuClose = () => {
     setIsMenuOpen((prevState) => !prevState);
+  };
+
+  const handleMenuClick = (e) => {
+    const redirectPath = e.target.textContent;
+    if (redirectPath === "Logout") return;
+    navigate(`${redirectPath.toLowerCase()}`);
+  };
+
+  const handleSignUpClick = () => {
+    navigate("/auth");
   };
 
   const menuItems = ["Profile", "Logout"];
@@ -45,7 +56,7 @@ export const Header = () => {
             variant="h4"
             color={"paleturquoise"}
             component={"a"}
-            href="#home"
+            href="/"
           >
             READER
           </LogoText>
@@ -56,7 +67,8 @@ export const Header = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: { sx: "50%", sm: "30%" },
+            width: { sx: "50%", sm: user ? "18%" : "30%" },
+            fontWeight: "bold",
           }}
         >
           <Button
@@ -90,16 +102,19 @@ export const Header = () => {
             Write
           </Button>
 
-          <ButtonThemeProvider theme={theme}>
-            <SignUpButton
-              sx={{ display: { xs: "none", sm: "block" } }}
-              disableElevation
-              variant="contained"
-              color="primary"
-            >
-              Sign Up
-            </SignUpButton>
-          </ButtonThemeProvider>
+          {!user && (
+            <ButtonThemeProvider theme={theme}>
+              <SignUpButton
+                sx={{ display: { xs: "none", sm: "block" } }}
+                disableElevation
+                variant="contained"
+                color="primary"
+                onClick={handleSignUpClick}
+              >
+                Sign Up
+              </SignUpButton>
+            </ButtonThemeProvider>
+          )}
 
           <Tooltip>
             <IconButton
@@ -125,6 +140,7 @@ export const Header = () => {
             }}
             open={isMenuOpen}
             onClose={handleMenuClose}
+            onClick={handleMenuClick}
           >
             {menuItems.map((menuItem) => (
               <MenuItem key={menuItem} onClick={handleMenuClose}>
