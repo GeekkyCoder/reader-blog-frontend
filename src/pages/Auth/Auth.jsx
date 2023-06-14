@@ -23,8 +23,8 @@ export const Auth = () => {
   return (
     <AuthContainer>
       <DialogContainer open={isDialogeOpen} onClose={handleClose}>
-        {!user && <Signup handleClose={handleClose} />}
-        {user && <Login handleClose={handleClose} />}
+        {!user.currentUser && <Signup handleClose={handleClose} />}
+        {user.currentUser && <Login handleClose={handleClose} />}
       </DialogContainer>
     </AuthContainer>
   );

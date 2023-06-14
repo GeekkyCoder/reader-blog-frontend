@@ -58,7 +58,7 @@ export const LandingPage = () => {
               >
                 Blogs
               </Button>
-              {!user && <Button
+              {!user.currentUser && <Button
                 sx={{
                   width: { xs: "100%", sm: "150px" },
                   marginTop: { xs: "20px" },

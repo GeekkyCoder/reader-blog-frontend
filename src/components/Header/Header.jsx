@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -16,15 +16,28 @@ import {
 import { LogoText, SignUpButton, StyledToolbar, theme } from "./Header.styles";
 
 import { ThemeProvider as ButtonThemeProvider } from "@mui/material";
-import { userSelectorReducer } from "../../store/user/userSelector";
-import { useSelector } from "react-redux";
+import {
+  loggedInUserSelector,
+  userSelectorReducer,
+} from "../../store/user/userSelector";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import {
+  FETCH_LOGGEDINUSER_FAILED,
+  FETCH_LOGGEDINUSER_LOGOUT,
+  FETCH_LOGGEDINUSER_START,
+  FETCH_LOGGEDINUSER_SUCCESS,
+} from "../../store/user/user.actions";
+import { SET_LOGGED_IN_USER_LOGOUT, SET_USER_LOGOUT } from "../../store/user/user.actionTypes";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const user = useSelector(userSelectorReducer);
+  const loggedInUser = useSelector(loggedInUserSelector);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleMenuClose = () => {
     setIsMenuOpen((prevState) => !prevState);
@@ -32,7 +45,10 @@ export const Header = () => {
 
   const handleMenuClick = (e) => {
     const redirectPath = e.target.textContent;
-    if (redirectPath === "Logout") return;
+    if (redirectPath === "Logout") {
+      dispatch(SET_USER_LOGOUT())
+      dispatch(SET_LOGGED_IN_USER_LOGOUT())
+    };
     navigate(`${redirectPath.toLowerCase()}`);
   };
 
@@ -41,6 +57,28 @@ export const Header = () => {
   };
 
   const menuItems = ["Profile", "Logout"];
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        dispatch(FETCH_LOGGEDINUSER_START());
+        const { data } = await axios.get(
+          "http://localhost:8000/api/v1/auth/currentUser",
+          {
+            headers: {
+              Authorization: `Bearer ${user.currentUser.token}`,
+            },
+          }
+        );
+        console.log(data);
+        dispatch(FETCH_LOGGEDINUSER_SUCCESS(data));
+      } catch (err) {
+        dispatch(FETCH_LOGGEDINUSER_FAILED(err));
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   return (
     <AppBar position="sticky">
@@ -67,7 +105,7 @@ export const Header = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: { sx: "50%", sm: user ? "18%" : "30%" },
+            width: { sx: "50%", sm: user.currentUser ? "18%" : "30%" },
             fontWeight: "bold",
           }}
         >
@@ -102,7 +140,7 @@ export const Header = () => {
             Write
           </Button>
 
-          {!user && (
+          {!user.currentUser && (
             <ButtonThemeProvider theme={theme}>
               <SignUpButton
                 sx={{ display: { xs: "none", sm: "block" } }}
@@ -122,7 +160,7 @@ export const Header = () => {
               sx={{ marginLeft: { xs: ".6em", sm: 0 } }}
             >
               <Avatar
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT98DIaWyML_0PGa-FyErqwh_uesZKwezoovw&usqp=CAU"
+                src={loggedInUser.user.profileImage}
                 alt="Remy Sharp"
               ></Avatar>
             </IconButton>
