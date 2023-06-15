@@ -25,7 +25,7 @@ import { currentUserSelector, userErrorSelector, userLoadingSelector, userTokenS
 import { LoadingButton } from "@mui/lab";
 import { FETCH_USER_START,FETCH_USER_SUCCESS,FETCH_USER_FAILED } from "../../store/user/user.actions";
 
-export const Profile = () => {
+const Profile = () => {
   const navigate = useNavigate();
 
   // current user just to grab some information for current user from backend
@@ -383,3 +383,6 @@ export const Profile = () => {
     </>
   );
 };
+
+
+export default Profile

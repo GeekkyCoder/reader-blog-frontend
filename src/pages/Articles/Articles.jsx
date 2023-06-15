@@ -6,7 +6,7 @@ import axios from "axios";
 
 import { useEffect, useState } from "react";
 
-export const Article = () => {
+ const Articles = () => {
   const [blogs, setAllBlogs] = useState([]);
 
   useEffect(() => {
@@ -42,3 +42,6 @@ export const Article = () => {
     </Stack>
   );
 };
+
+
+export default Articles

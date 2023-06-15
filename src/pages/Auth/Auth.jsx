@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { currentUserSelector } from "../../store/user/userSelector";
 
-export const Auth = () => {
+ const Auth = () => {
   const [isDialogeOpen, setIsDialogOpen] = useState(true);
 
 
@@ -26,3 +26,5 @@ export const Auth = () => {
     </AuthContainer>
   );
 };
+
+export default Auth

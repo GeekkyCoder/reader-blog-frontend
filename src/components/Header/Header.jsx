@@ -29,7 +29,7 @@ import {
 
 import { Login } from "@mui/icons-material";
 
-export const Header = () => {
+ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const currentUser = useSelector(currentUserSelector);
@@ -185,3 +185,6 @@ export const Header = () => {
     </AppBar>
   );
 };
+
+
+export default Header
