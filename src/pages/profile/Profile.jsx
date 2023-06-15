@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -21,26 +21,14 @@ import {
 
 import { Close, Save } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
-import { userSelectorReducer } from "../../store/user/userSelector";
+import { currentUserSelector, userErrorSelector, userLoadingSelector, userTokenSelector } from "../../store/user/userSelector";
 import { LoadingButton } from "@mui/lab";
-import {
-  FETCH_USER_FAILED,
-  FETCH_USER_START,
-  FETCH_USER_SUCCESS,
-} from "../../store/user/user.actions";
+import { FETCH_USER_START,FETCH_USER_SUCCESS,FETCH_USER_FAILED } from "../../store/user/user.actions";
 
 export const Profile = () => {
-  const textAreaRef = useRef(null);
-
   const navigate = useNavigate();
 
   // current user just to grab some information for current user from backend
-  const [currentUser, setCurrentUser] = useState({
-    name: "",
-    email: "",
-    bio: "",
-    profileImage: "",
-  });
   const [isLoading, setIsLoading] = useState(false);
   const [fileChoosen, setFileChoosen] = useState(false);
   const [error, setError] = useState(false);
@@ -49,7 +37,10 @@ export const Profile = () => {
   const [fieldsDisable, setFieldsDisable] = useState(true);
   const [isDrawerClose, setIsDrawerClose] = useState(true);
 
-  const user = useSelector(userSelectorReducer);
+  const currentUser = useSelector(currentUserSelector);
+  const userToken = useSelector(userTokenSelector)
+  const isUserLoading = useSelector(userLoadingSelector)
+  const userError = useSelector(userErrorSelector)
   const dispatch = useDispatch();
 
   const [formFields, setFormFields] = useState({
@@ -61,25 +52,27 @@ export const Profile = () => {
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
+      dispatch(FETCH_USER_START())
       try {
         const { data } = await axios.get(
           "http://localhost:8000/api/v1/auth/currentUser",
           {
             headers: {
-              Authorization: `Bearer ${user.currentUser.token}`,
+              Authorization: `Bearer ${userToken}`,
             },
           }
         );
-        setCurrentUser(data.user);
+        dispatch(FETCH_USER_SUCCESS(data))
       } catch (err) {
-        console.log(err);
+        console.log(err)
+        dispatch(FETCH_USER_FAILED(err))
       }
     };
 
     fetchCurrentUser();
-  }, [user]);
+  }, []);
 
-  const updateUserProfilePicture = async () => {
+  const updateUserProfilePicture = useCallback(async () => {
     const image = formFields.profileImage;
 
     // image -> something.png
@@ -95,13 +88,13 @@ export const Profile = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${user.currentUser.token}`,
+            Authorization: `Bearer ${userToken}`,
           },
         }
       );
       setIsLoading(false);
       setFileChoosen(false);
-      setSnackbarMessage(data.msg);
+      setSnackbarMessage("profile picture updated ✔");
       setIsSnackBarOpen(true);
       setTimeout(() => {
         setIsSnackBarOpen(false);
@@ -109,20 +102,18 @@ export const Profile = () => {
       }, 3000);
       setError(false);
     } catch (err) {
-      if (err.message) {
         setIsSnackBarOpen(true);
         setError(true);
-        setSnackbarMessage(err.message);
+        setSnackbarMessage(err.response.data.msg);
         setIsLoading(false);
         setFileChoosen(false);
         setTimeout(() => {
           setIsSnackBarOpen(false);
         }, 3000);
-      }
     }
-  };
+  },[formFields]);
 
-  const handleUserFormSubmit = async (e) => {
+  const handleUserFormSubmit =  useCallback( async (e) => {
     e.preventDefault();
     const userObj = {
       name: formFields.name,
@@ -131,7 +122,7 @@ export const Profile = () => {
     };
 
     //submit the user information
-    setIsLoading(true);
+
     dispatch(FETCH_USER_START());
     try {
       const { data } = await axios.patch(
@@ -139,7 +130,7 @@ export const Profile = () => {
         userObj,
         {
           headers: {
-            Authorization: `Bearer ${user.currentUser.token}`,
+            Authorization: `Bearer ${userToken}`,
           },
         }
       );
@@ -151,31 +142,27 @@ export const Profile = () => {
         // window.location.reload(true);
         setIsDrawerClose(false);
         navigate("/");
-      }, 5000);
+      }, 3000);
       setSnackbarMessage("profile information updated ✔");
-      setIsLoading(false);
-      setError(false);
     } catch (err) {
-      setIsDrawerClose(true);
-      setSnackbarMessage("could not update profile information");
-      setIsSnackBarOpen(true);
-      setError(true);
-      setIsLoading(false);
       dispatch(FETCH_USER_FAILED(err));
+      setIsDrawerClose(true);
+      setSnackbarMessage("❌ could not update profile information");
+      setIsSnackBarOpen(true);
       setTimeout(() => {
         setIsSnackBarOpen(false);
-      }, 5000);
+      }, 3000);
     }
-  };
+  },[formFields,currentUser]);
 
   useEffect(() => {
     setFormFields((prevFields) => {
       return {
         ...prevFields,
-        name: currentUser.name,
-        bio: currentUser.bio,
-        email: currentUser.email,
-        profileImage: currentUser.profileImage,
+        name: currentUser?.name,
+        bio: currentUser?.bio,
+        email: currentUser?.email,
+        profileImage:currentUser?.profileImage,
       };
     });
   }, [currentUser]);
@@ -184,13 +171,9 @@ export const Profile = () => {
     setFieldsDisable(false);
   };
 
-  const handleFormFieldChanges = (e) => {
-    const { name, value, type } = e.target;
 
-    if (type === "textarea") {
-      setFormFields({ ...formFields, bio: textAreaRef.current.value });
-      setFileChoosen(true);
-    }
+  const handleFormFieldChanges = useCallback((e) => {
+    const { name, value, type } = e.target;
 
     if (type === "file") {
       setFormFields({ ...formFields, [name]: e.target.files[0] });
@@ -201,7 +184,7 @@ export const Profile = () => {
     }
 
     setFormFields({ ...formFields, [name]: value });
-  };
+  },[currentUser,formFields]);
 
   const handleDrawerClose = () => {
     setIsDrawerClose(false);
@@ -249,17 +232,18 @@ export const Profile = () => {
                 fontFamily={"sans-serif"}
                 fontWeight={800}
               >
-                {currentUser.name.toUpperCase()}
+                {currentUser?.name}
               </Typography>
             </Typography>
-            <Button
+            <LoadingButton
+              loading={isUserLoading}
               autoFocus
               color="inherit"
               onClick={handleUserFormSubmit}
               disabled={fieldsDisable}
             >
               save
-            </Button>
+            </LoadingButton>
           </Toolbar>
         </AppBar>
 
@@ -349,6 +333,7 @@ export const Profile = () => {
                     <TextField
                       disabled={fieldsDisable || fileChoosen}
                       type="file"
+                      accept="image/*"
                       variant="outlined"
                       name="profileImage"
                       onChange={handleFormFieldChanges}
@@ -361,7 +346,7 @@ export const Profile = () => {
                       <Tooltip>
                         <IconButton sx={{ marginLeft: { xs: ".6em", sm: 0 } }}>
                           <Avatar
-                            src={currentUser.profileImage}
+                            src={currentUser?.profileImage}
                             alt={"user-profile"}
                           ></Avatar>
                         </IconButton>

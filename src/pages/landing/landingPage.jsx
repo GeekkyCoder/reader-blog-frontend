@@ -4,12 +4,17 @@ import LandingPageImage from "../../Assets/landing-page-main.jpg";
 import { AwesomeText, ButtonsContainer } from "./LandingPageStyles";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { userSelectorReducer } from "../../store/user/userSelector";
+import { currentUserSelector } from "../../store/user/userSelector";
 
 export const LandingPage = () => {
   const navigate = useNavigate();
 
-  const user = useSelector(userSelectorReducer)
+  const currentUser = useSelector(currentUserSelector)
+
+
+  const handleBlogsClick = () => {
+    navigate("/content");
+  };
 
   return (
     <>
@@ -29,7 +34,16 @@ export const LandingPage = () => {
               component={"h1"}
               color={"CaptionText"}
             >
-              Where great minds write awesome blogs priceless
+              Where great{" "}
+              <Typography component={"span"} className="span" variant="span">
+                minds
+              </Typography>{" "}
+              write awesome    <Typography component={"span"} className="blogText" variant="span">
+                blogs
+              </Typography>{" "}
+              <Typography component={"span"} className="span" variant="span">
+                priceless
+              </Typography>
             </AwesomeText>
 
             <Box mt={"1em"}>
@@ -55,20 +69,23 @@ export const LandingPage = () => {
                 sx={{ width: { xs: "100%", sm: "150px" } }}
                 variant="contained"
                 color="secondary"
+                onClick={handleBlogsClick}
               >
                 Blogs
               </Button>
-              {!user.currentUser && <Button
-                sx={{
-                  width: { xs: "100%", sm: "150px" },
-                  marginTop: { xs: "20px" },
-                }}
-                variant="contained"
-                color="primary"
-                onClick={() => navigate("/auth")}
-              >
-                Sign up
-              </Button>}
+              {!currentUser && (
+                <Button
+                  sx={{
+                    width: { xs: "100%", sm: "150px" },
+                    marginTop: { xs: "20px" },
+                  }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => navigate("/auth")}
+                >
+                  Sign up
+                </Button>
+              )}
             </ButtonsContainer>
           </Box>
           <Box flex={1} sx={{ order: { xs: 1, sm: 2 } }}>

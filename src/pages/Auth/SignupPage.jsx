@@ -29,9 +29,9 @@ import {
   FETCH_USER_SUCCESS,
 } from "../../store/user/user.actions";
 import {
+  currentUserSelector,
   userErrorSelector,
   userLoadingSelector,
-  userSelectorReducer,
 } from "../../store/user/userSelector";
 
 const defaultFormFields = {
@@ -41,7 +41,7 @@ const defaultFormFields = {
   confirmPassword: "",
 };
 
-export const Signup = ({}) => {
+export const Signup = ({handleClose}) => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const [showPassword, setShowPassword] = useState(false);
   const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
@@ -50,8 +50,7 @@ export const Signup = ({}) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const user = useSelector(userSelectorReducer);
+  
   const error = useSelector(userErrorSelector);
   const loading = useSelector(userLoadingSelector);
 
@@ -81,6 +80,7 @@ export const Signup = ({}) => {
         "http://localhost:8000/api/v1/auth/register",
         userObj
       );
+      console.log(data)
       dispatch(FETCH_USER_SUCCESS(data));
       setFormFields({
         name: "",
@@ -90,8 +90,9 @@ export const Signup = ({}) => {
       });
       setIsSnackBarOpen(true);
     } catch (err) {
-      dispatch(FETCH_USER_FAILED(err.response.data));
+      dispatch(FETCH_USER_FAILED(err));
       setIsSnackBarOpen(false);
+      handleClose()
     } finally {
       setTimeout(() => {
         setIsSnackBarOpen(false);

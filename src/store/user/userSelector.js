@@ -1,4 +1,6 @@
-export const userSelectorReducer = (state) => state.user;
+export const userTokenSelector = (state) => state.user.currentUser.token;
+
+export const currentUserSelector = state => state.user.currentUser.user
 
 export const userErrorSelector = state => state.user.error
 
