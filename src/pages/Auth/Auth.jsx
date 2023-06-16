@@ -4,24 +4,19 @@ import { LoginPage } from "./LoginPage";
 
 import { AuthContainer, DialogContainer } from "./AuthStyles";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { currentUserSelector } from "../../store/user/userSelector";
 
  const Auth = () => {
-  const [isDialogeOpen, setIsDialogOpen] = useState(true);
-
-
-  const currentUser = useSelector(currentUserSelector)
-
-  const handleClose = () => {
-    setIsDialogOpen(false);
-  };
+  const [showAuth,setShowAuth]  = useState(false)
+ 
+  const handleShowAuth = () => {
+    setShowAuth(prevAuthShow => !prevAuthShow)
+  }
 
   return (
     <AuthContainer>
-      <DialogContainer open={isDialogeOpen}>
-        {!currentUser && <Signup handleClose={handleClose} />}
-        {currentUser && <LoginPage handleClose={handleClose} />}
+      <DialogContainer open={true} >
+       {!showAuth &&  <Signup  handleShowAuth={handleShowAuth}/>}
+        {showAuth && <LoginPage handleShowAuth={handleShowAuth}/>}
       </DialogContainer>
     </AuthContainer>
   );

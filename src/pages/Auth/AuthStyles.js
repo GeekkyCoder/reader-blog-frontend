@@ -1,9 +1,9 @@
 import { Box, Dialog, TextField, styled } from "@mui/material";
-import ConstellationImage from "../../Assets/endless-constellation.png";
+import ScattereredForceFlies from "../../Assets/scattered-forcefields.png";
 
 export const AuthContainer = styled(Box)(({ theme }) => ({
   minHeight: "100vh",
-  backgroundImage: `url(${ConstellationImage})`,
+  backgroundImage: `url(${ScattereredForceFlies})`,
   backgroundSize: "cover",
   backgroundPosition: "center",
 }));

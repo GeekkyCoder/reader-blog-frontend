@@ -1,4 +1,6 @@
-import { Box, Container, Typography, Button } from "@mui/material";
+import { useState, useEffect } from "react";
+
+import { Box, Typography, Button } from "@mui/material";
 
 import { AwesomeText, ButtonsContainer } from "./LandingPageStyles";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +14,14 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import LandingPageImage from "../../Assets/landing-page-main.jpg";
 import LandingPageImage2 from "../../Assets/landing-page-main-2.jpg";
 import LandingPageImage3 from "../../Assets/landing-page-main-3.jpg";
+
+import "./slider.css";
+
+import axios from "axios";
+
+import { UNSPLASH_API_ACCESS_KEY } from "../../utils/unsplash.api";
+
+// import Typewriter from "typewriter-effect";
 
 const sliderSettings = {
   dots: true,
@@ -27,6 +37,10 @@ const sliderSettings = {
 };
 
 const LandingPage = () => {
+  const [unsplashImages, setUnsplashImages] = useState([
+    { imageSrc: "", user: {} },
+  ]);
+
   const navigate = useNavigate();
 
   const currentUser = useSelector(currentUserSelector);
@@ -35,9 +49,49 @@ const LandingPage = () => {
     navigate("/content");
   };
 
+  const fetchImagesFromUnsplash = async () => {
+    let results;
+    let imagesPayload = { imageData: [] };
+    const unsplash_url = `https://api.unsplash.com/search/photos?query=nature&orientation=landscape&client_id=${UNSPLASH_API_ACCESS_KEY} `;
+    try {
+      const { data } = await axios.get(unsplash_url);
+
+      results = data.results;
+      results.forEach((result) => {
+        imagesPayload.imageData.push({
+          imageSrc: result.urls.full,
+          description: result.description,
+          user: result.user,
+        });
+      });
+
+      setUnsplashImages(imagesPayload.imageData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchImagesFromUnsplash();
+  }, []);
+
+  const randomIndex = Math.floor(Math.random() * unsplashImages.length) || 0;
+
   return (
     <>
-      <Container sx={{ mt: "2em" }}>
+      <Box
+        sx={{
+          backgroundImage: `url(
+            ${unsplashImages[randomIndex]?.imageSrc}
+          )`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundBlendMode: "multiply",
+          backgroundColor: "GrayText",
+          height:{xs:'150vh',sm:'800px'},
+          padding: "2em",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -51,7 +105,7 @@ const LandingPage = () => {
               fontWeight={"bold"}
               variant="h2"
               component={"h1"}
-              color={"CaptionText"}
+              color={"white"}
             >
               Where great{" "}
               <Typography component={"span"} className="span" variant="span">
@@ -71,13 +125,13 @@ const LandingPage = () => {
             </AwesomeText>
 
             <Box mt={"1em"}>
-              <Typography variant="p" component={"p"} color={"GrayText"}>
+              <Typography variant="p" component={"p"} color={"white"}>
                 Find, explore and learn in an awesome place
               </Typography>
               <Typography
                 variant="p"
                 component={"p"}
-                color={"GrayText"}
+                color={"white"}
                 mt={".5em"}
               >
                 Find, explore and learn in great way
@@ -113,10 +167,7 @@ const LandingPage = () => {
             </ButtonsContainer>
           </Box>
           <Box flex={1} sx={{ order: { xs: 1, sm: 2 } }}>
-            <Slider
-              {...sliderSettings}
-              style={{ width: "50vw", border: "0px" }}
-            >
+            <Slider className="slider-container" {...sliderSettings}>
               <Box>
                 <LazyLoadImage
                   style={{
@@ -153,7 +204,22 @@ const LandingPage = () => {
             </Slider>
           </Box>
         </Box>
-      </Container>
+
+        <Box>
+          <Typography
+            textAlign={"center"}
+            mt={"4em"}
+            mb={'2em'}
+            fontSize={"1.5rem"}
+            fontFamily={"monospace"}
+            color="whitesmoke"
+            component={"p"}
+            variant="p"
+          >
+            {unsplashImages[randomIndex]?.description}
+          </Typography>
+        </Box>
+      </Box>
     </>
   );
 };

@@ -19,11 +19,21 @@ import {
   Tooltip,
 } from "@mui/material";
 
-import { Close, Save } from "@mui/icons-material";
+import { Close, Save, Error } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
-import { currentUserSelector, userErrorSelector, userLoadingSelector, userTokenSelector } from "../../store/user/userSelector";
+import {
+  currentUserSelector,
+  userLoadingSelector,
+  userTokenSelector,
+} from "../../store/user/userSelector";
 import { LoadingButton } from "@mui/lab";
-import { FETCH_USER_START,FETCH_USER_SUCCESS,FETCH_USER_FAILED } from "../../store/user/user.actions";
+import {
+  FETCH_USER_START,
+  FETCH_USER_SUCCESS,
+  FETCH_USER_FAILED,
+} from "../../store/user/user.actions";
+
+import AlertIcon from "../../Assets/alert-icon.png";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -38,9 +48,7 @@ const Profile = () => {
   const [isDrawerClose, setIsDrawerClose] = useState(true);
 
   const currentUser = useSelector(currentUserSelector);
-  const userToken = useSelector(userTokenSelector)
-  const isUserLoading = useSelector(userLoadingSelector)
-  const userError = useSelector(userErrorSelector)
+  const isUserLoading = useSelector(userLoadingSelector);
   const dispatch = useDispatch();
 
   const [formFields, setFormFields] = useState({
@@ -49,28 +57,6 @@ const Profile = () => {
     email: "",
     profileImage: "",
   });
-
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      dispatch(FETCH_USER_START())
-      try {
-        const { data } = await axios.get(
-          "http://localhost:8000/api/v1/auth/currentUser",
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
-        );
-        dispatch(FETCH_USER_SUCCESS(data))
-      } catch (err) {
-        console.log(err)
-        dispatch(FETCH_USER_FAILED(err))
-      }
-    };
-
-    fetchCurrentUser();
-  }, []);
 
   const updateUserProfilePicture = useCallback(async () => {
     const image = formFields.profileImage;
@@ -83,14 +69,8 @@ const Profile = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/auth/uploadUserProfileImage",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
+        "/api/v1/auth/uploadUserProfileImage",
+        formData
       );
       setIsLoading(false);
       setFileChoosen(false);
@@ -102,67 +82,66 @@ const Profile = () => {
       }, 3000);
       setError(false);
     } catch (err) {
+      setIsSnackBarOpen(true);
+      setError(true);
+      setSnackbarMessage(err.response.data.msg);
+      setIsLoading(false);
+      setFileChoosen(false);
+      setTimeout(() => {
+        setIsSnackBarOpen(false);
+      }, 3000);
+    }
+  }, [formFields]);
+
+  const handleUserFormSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      const userObj = {
+        name: formFields.name,
+        email: formFields.email,
+        bio: formFields.bio,
+      };
+
+      //submit the user information
+
+      dispatch(FETCH_USER_START());
+      try {
+        const { data } = await axios.patch(
+          "/api/v1/auth/updateuser",
+          userObj
+        );
+        dispatch(FETCH_USER_SUCCESS(data));
+        setIsDrawerClose(false);
         setIsSnackBarOpen(true);
-        setError(true);
-        setSnackbarMessage(err.response.data.msg);
-        setIsLoading(false);
-        setFileChoosen(false);
+        setTimeout(() => {
+          setIsSnackBarOpen(false);
+          // window.location.reload(true);
+          setIsDrawerClose(false);
+          navigate("/");
+        }, 3000);
+        setSnackbarMessage("profile information updated ✔");
+      } catch (err) {
+        console.log(err)
+        dispatch(FETCH_USER_FAILED(err));
+        setIsDrawerClose(true);
+        setSnackbarMessage("❌ could not update profile information");
+        setIsSnackBarOpen(true);
         setTimeout(() => {
           setIsSnackBarOpen(false);
         }, 3000);
-    }
-  },[formFields]);
-
-  const handleUserFormSubmit =  useCallback( async (e) => {
-    e.preventDefault();
-    const userObj = {
-      name: formFields.name,
-      email: formFields.email,
-      bio: formFields.bio,
-    };
-
-    //submit the user information
-
-    dispatch(FETCH_USER_START());
-    try {
-      const { data } = await axios.patch(
-        "http://localhost:8000/api/v1/auth/updateuser",
-        userObj,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-      dispatch(FETCH_USER_SUCCESS(data));
-      setIsDrawerClose(false);
-      setIsSnackBarOpen(true);
-      setTimeout(() => {
-        setIsSnackBarOpen(false);
-        // window.location.reload(true);
-        setIsDrawerClose(false);
-        navigate("/");
-      }, 3000);
-      setSnackbarMessage("profile information updated ✔");
-    } catch (err) {
-      dispatch(FETCH_USER_FAILED(err));
-      setIsDrawerClose(true);
-      setSnackbarMessage("❌ could not update profile information");
-      setIsSnackBarOpen(true);
-      setTimeout(() => {
-        setIsSnackBarOpen(false);
-      }, 3000);
-    }
-  },[formFields,currentUser]);
+      }
+    },
+    [formFields, currentUser]
+  );
 
   useEffect(() => {
     setFormFields((prevFields) => {
       return {
         ...prevFields,
-        name: currentUser?.name,
-        bio: currentUser?.bio,
-        email: currentUser?.email,
-        profileImage:currentUser?.profileImage,
+        name: currentUser?.user?.name,
+        bio: currentUser?.user?.bio,
+        email: currentUser?.user?.email,
+        profileImage: currentUser?.user.profileImage,
       };
     });
   }, [currentUser]);
@@ -171,24 +150,30 @@ const Profile = () => {
     setFieldsDisable(false);
   };
 
+  const handleFormFieldChanges = useCallback(
+    (e) => {
+      const { name, value, type } = e.target;
 
-  const handleFormFieldChanges = useCallback((e) => {
-    const { name, value, type } = e.target;
+      if (type === "file") {
+        setFormFields({ ...formFields, [name]: e.target.files[0] });
+        setFileChoosen(true);
+        return;
+      } else {
+        setFileChoosen(false);
+      }
 
-    if (type === "file") {
-      setFormFields({ ...formFields, [name]: e.target.files[0] });
-      setFileChoosen(true);
-      return;
-    } else {
-      setFileChoosen(false);
-    }
-
-    setFormFields({ ...formFields, [name]: value });
-  },[currentUser,formFields]);
+      setFormFields({ ...formFields, [name]: value });
+    },
+    [currentUser, formFields]
+  );
 
   const handleDrawerClose = () => {
     setIsDrawerClose(false);
     navigate("/");
+  };
+
+  const handleReaderButtonClick = () => {
+    navigate("/auth");
   };
 
   return (
@@ -202,187 +187,214 @@ const Profile = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
-      <Dialog
-        fullScreen
-        open={isDrawerClose}
-        //   onClose={handleClose}
-      >
-        <AppBar sx={{ position: "relative" }}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={handleDrawerClose}
-              aria-label="close"
-            >
-              <Close />
-            </IconButton>
-            <Typography
-              sx={{ ml: 2, flex: 1 }}
-              fontWeight={800}
-              fontStyle={"normal"}
-              variant="h6"
-              component="div"
-              color={"cornsilk"}
-            >
-              Welcome{" "}
-              <Typography
-                variant="p"
-                component={"span"}
-                fontFamily={"sans-serif"}
-                fontWeight={800}
-              >
-                {currentUser?.name}
-              </Typography>
-            </Typography>
-            <LoadingButton
-              loading={isUserLoading}
-              autoFocus
-              color="inherit"
-              onClick={handleUserFormSubmit}
-              disabled={fieldsDisable}
-            >
-              save
-            </LoadingButton>
-          </Toolbar>
-        </AppBar>
 
+      {currentUser ? (
+        <Dialog
+          fullScreen
+          open={isDrawerClose}
+          //   onClose={handleClose}
+        >
+          <AppBar sx={{ position: "relative" }}>
+            <Toolbar>
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={handleDrawerClose}
+                aria-label="close"
+              >
+                <Close />
+              </IconButton>
+              <Typography
+                sx={{ ml: 2, flex: 1 }}
+                fontWeight={800}
+                fontStyle={"normal"}
+                variant="h6"
+                component="div"
+                color={"cornsilk"}
+              >
+                Welcome{" "}
+                <Typography
+                  variant="p"
+                  component={"span"}
+                  fontFamily={"sans-serif"}
+                  fontWeight={800}
+                >
+                  {currentUser?.user?.name || "Guest"}
+                </Typography>
+              </Typography>
+              <LoadingButton
+                loading={isUserLoading}
+                autoFocus
+                color="inherit"
+                onClick={handleUserFormSubmit}
+                disabled={fieldsDisable}
+              >
+                save
+              </LoadingButton>
+            </Toolbar>
+          </AppBar>
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Box component={"form"} sx={{ width: "50%" }} mt={"4em"}>
+              <Stack direction={"column"} spacing={2}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    margin: "2em 0",
+                  }}
+                >
+                  <Box flex={2}>
+                    <TextField
+                      disabled={fieldsDisable}
+                      sx={{ width: "70%" }}
+                      variant="standard"
+                      value={formFields.name}
+                      name="name"
+                      onChange={handleFormFieldChanges}
+                    ></TextField>
+                  </Box>
+
+                  <Box sx={{ flex: 2 }}>
+                    <TextField
+                      disabled={fieldsDisable}
+                      sx={{ width: "70%" }}
+                      variant="standard"
+                      value={formFields.email}
+                      name="email"
+                      onChange={handleFormFieldChanges}
+                    ></TextField>
+                  </Box>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    margin: "2em 0",
+                  }}
+                >
+                  <Box flex={5}>
+                    <TextField
+                      sx={{ width: "100%" }}
+                      variant="outlined"
+                      disabled={fieldsDisable}
+                      placeholder={
+                        formFields.bio || "⭐ How would you describe yourself"
+                      }
+                      name="bio"
+                      value={formFields.bio}
+                      maxRows={3}
+                      size="medium"
+                      onChange={handleFormFieldChanges}
+                    ></TextField>
+                  </Box>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    margin: "2em 0",
+                  }}
+                >
+                  <Box flex={4} m={"2em 0"}>
+                    <Typography variant="p" component={"p"}>
+                      Update Profile picture
+                    </Typography>
+                    <Stack
+                      direction={"row"}
+                      spacing={1}
+                      alignItems={"center"}
+                      m={"1em 0"}
+                    >
+                      <TextField
+                        disabled={fieldsDisable || fileChoosen}
+                        type="file"
+                        accept="image/*"
+                        variant="outlined"
+                        name="profileImage"
+                        onChange={handleFormFieldChanges}
+                      ></TextField>
+                      <Stack
+                        direction={"row"}
+                        justifyContent={"space-between"}
+                        alignItems={"center"}
+                      >
+                        <Tooltip>
+                          <IconButton
+                            sx={{ marginLeft: { xs: ".6em", sm: 0 } }}
+                          >
+                            <Avatar
+                              src={currentUser?.profileImage}
+                              alt={"user-profile"}
+                            ></Avatar>
+                          </IconButton>
+                        </Tooltip>
+
+                        <LoadingButton
+                          startIcon={<Save />}
+                          disabled={fileChoosen === false}
+                          loading={isLoading}
+                          onClick={updateUserProfilePicture}
+                          color="secondary"
+                          variant="contained"
+                          size="large"
+                        >
+                          Save
+                        </LoadingButton>
+                      </Stack>
+                    </Stack>
+                  </Box>
+                </Box>
+
+                <Button
+                  onClick={handleEditClick}
+                  variant="contained"
+                  color="primary"
+                  sx={{ display: "block", width: "300px", margin: "0 auto" }}
+                >
+                  Edit
+                </Button>
+              </Stack>
+            </Box>
+          </Box>
+        </Dialog>
+      ) : (
         <Box
           sx={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            height: "100vh",
           }}
         >
-          <Box component={"form"} sx={{ width: "50%" }} mt={"4em"}>
-            <Stack direction={"column"} spacing={2}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  margin: "2em 0",
-                }}
-              >
-                <Box flex={2}>
-                  <TextField
-                    disabled={fieldsDisable}
-                    sx={{ width: "70%" }}
-                    variant="standard"
-                    value={formFields.name}
-                    name="name"
-                    onChange={handleFormFieldChanges}
-                  ></TextField>
-                </Box>
-
-                <Box sx={{ flex: 2 }}>
-                  <TextField
-                    disabled={fieldsDisable}
-                    sx={{ width: "70%" }}
-                    variant="standard"
-                    value={formFields.email}
-                    name="email"
-                    onChange={handleFormFieldChanges}
-                  ></TextField>
-                </Box>
-              </Box>
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  margin: "2em 0",
-                }}
-              >
-                <Box flex={5}>
-                  <TextField
-                    sx={{ width: "100%" }}
-                    variant="outlined"
-                    disabled={fieldsDisable}
-                    placeholder={
-                      formFields.bio || "⭐ How would you describe yourself"
-                    }
-                    name="bio"
-                    value={formFields.bio}
-                    maxRows={3}
-                    size="medium"
-                    onChange={handleFormFieldChanges}
-                  ></TextField>
-                </Box>
-              </Box>
-
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  margin: "2em 0",
-                }}
-              >
-                <Box flex={4} m={"2em 0"}>
-                  <Typography variant="p" component={"p"}>
-                    Update Profile picture
-                  </Typography>
-                  <Stack
-                    direction={"row"}
-                    spacing={1}
-                    alignItems={"center"}
-                    m={"1em 0"}
-                  >
-                    <TextField
-                      disabled={fieldsDisable || fileChoosen}
-                      type="file"
-                      accept="image/*"
-                      variant="outlined"
-                      name="profileImage"
-                      onChange={handleFormFieldChanges}
-                    ></TextField>
-                    <Stack
-                      direction={"row"}
-                      justifyContent={"space-between"}
-                      alignItems={"center"}
-                    >
-                      <Tooltip>
-                        <IconButton sx={{ marginLeft: { xs: ".6em", sm: 0 } }}>
-                          <Avatar
-                            src={currentUser?.profileImage}
-                            alt={"user-profile"}
-                          ></Avatar>
-                        </IconButton>
-                      </Tooltip>
-
-                      <LoadingButton
-                        startIcon={<Save />}
-                        disabled={fileChoosen === false}
-                        loading={isLoading}
-                        onClick={updateUserProfilePicture}
-                        color="secondary"
-                        variant="contained"
-                        size="large"
-                      >
-                        Save
-                      </LoadingButton>
-                    </Stack>
-                  </Stack>
-                </Box>
-              </Box>
-
-              <Button
-                onClick={handleEditClick}
-                variant="contained"
-                color="primary"
-                sx={{ display: "block", width: "300px", margin: "0 auto" }}
-              >
-                Edit
-              </Button>
-            </Stack>
-          </Box>
+          <Avatar src={AlertIcon} alt="error-image"></Avatar>
+          <Typography component={"h2"} variant="'p">
+            Register Yourself to{" "}
+            <Button
+              onClick={handleReaderButtonClick}
+              variant="text"
+              color="error"
+              size="large"
+            >
+              READER
+            </Button>
+            to see and update your profile settings
+          </Typography>
         </Box>
-      </Dialog>
+      )}
     </>
   );
 };
 
-
-export default Profile
+export default Profile;

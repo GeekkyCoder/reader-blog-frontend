@@ -1,10 +1,11 @@
 import {
   Box,
   InputAdornment,
-  Button,
-  Typography,
   Snackbar,
   Fade,
+  Typography,
+  Button,
+  Stack
 } from "@mui/material";
 import axios from "axios";
 
@@ -16,8 +17,8 @@ import { LoadingButton } from "@mui/lab";
 
 import {
   AccountCircle,
-  Login,
   EmailOutlined,
+  Login,
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
@@ -29,10 +30,9 @@ import {
   FETCH_USER_SUCCESS,
 } from "../../store/user/user.actions";
 import {
-  currentUserSelector,
-  userErrorSelector,
   userLoadingSelector,
 } from "../../store/user/userSelector";
+
 
 const defaultFormFields = {
   name: "",
@@ -41,17 +41,16 @@ const defaultFormFields = {
   confirmPassword: "",
 };
 
-export const Signup = ({handleClose}) => {
+export const Signup = ({handleShowAuth}) => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const [showPassword, setShowPassword] = useState(false);
   const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
+  const [snackbarMessage,setSnackbarMessage] = useState('')
 
   const { name, email, password, confirmPassword } = formFields;
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  const error = useSelector(userErrorSelector);
   const loading = useSelector(userLoadingSelector);
 
   const handleFormSubmit = async (e) => {
@@ -77,10 +76,9 @@ export const Signup = ({handleClose}) => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/auth/register",
+        "/api/v1/auth/register",
         userObj
       );
-      console.log(data)
       dispatch(FETCH_USER_SUCCESS(data));
       setFormFields({
         name: "",
@@ -89,17 +87,21 @@ export const Signup = ({handleClose}) => {
         confirmPassword: "",
       });
       setIsSnackBarOpen(true);
+      setSnackbarMessage('successfully registered ✔')
+      setTimeout(() => {
+        navigate('/')
+        setIsSnackBarOpen(false)
+      },3000)
     } catch (err) {
       dispatch(FETCH_USER_FAILED(err));
-      setIsSnackBarOpen(false);
-      handleClose()
-    } finally {
+      setSnackbarMessage(err.response.data.msg)
+      setIsSnackBarOpen(true);
       setTimeout(() => {
         setIsSnackBarOpen(false);
-        navigate("/");
-      }, 4000);
+      }, 3000);
     }
   };
+
 
   const handlePasswordShow = () => {
     setShowPassword((prevState) => !prevState);
@@ -115,12 +117,29 @@ export const Signup = ({handleClose}) => {
   return (
     <FormContainer component={"form"} onSubmit={handleFormSubmit}>
       <Snackbar
+        message={snackbarMessage}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         TransitionComponent={Fade}
         open={isSnackBarOpen}
-        message={error ? "something went wrong" : "success"}
       />
       <Box>
+      <Typography
+        variant="h3"
+        component={"h5"}
+        textAlign={"center"}
+        color={"GrayText"}
+      >
+        READER
+      </Typography>
+      <Typography
+        component={"h3"}
+        variant="p"
+        textAlign={"center"}
+        color={"GrayText"}
+        mt={"1em"}
+      >
+        SIGNUP
+      </Typography>
         <InputField
           variant="outlined"
           label="Name"
@@ -217,37 +236,28 @@ export const Signup = ({handleClose}) => {
           loading={loading}
           variant="contained"
           color="primary"
+          size="large"
         >
           Submit
         </LoadingButton>
-      </Box>
-
-      <Box>
-        <Typography
-          variant="h6"
-          component={"h5"}
-          color={"GrayText"}
-          sx={{ textAlign: "center", margin: ".7em 0", fontWeight: "bold" }}
-        >
-          OR{" "}
+        <Stack direction={'column'} justifyContent={'center'} alignItems={'center'}>
+        <Typography m={'1em'}>
+          Already Have An Account ?
         </Typography>
-        <Button
-          startIcon={<Login />}
-          variant="outlined"
-          color="secondary"
-          //   onClick={() => handleClose("login")}
-          //   sx={{ display: "block", margin: "auto", width: "200px" }}
-          sx={{
-            display: "flex",
-            textAlign: "center",
-            flexDirection: "row",
-            width: "200px",
-            margin: "auto",
-            alignItems: "center",
-          }}
+        <Button 
+        onClick={handleShowAuth}
+         sx={{
+          display: { sm: "flex" },
+          width: { sm: "200px" },
+          margin: { sm: "auto" },
+        }}
+        size="large"
+        variant="outlined"
+        startIcon={<Login/>}
         >
           Login
         </Button>
+        </Stack>
       </Box>
     </FormContainer>
   );

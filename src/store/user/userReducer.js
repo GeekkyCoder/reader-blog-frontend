@@ -1,7 +1,7 @@
 const USER_ACTION_TYPES = require("./user.actionTypes");
 
 const INITIAL_STATE = {
-  currentUser: null || JSON.parse(localStorage.getItem("user")),
+  currentUser: null,
   isLoading: false,
   error: null,
 };
@@ -28,7 +28,6 @@ const userReducer = (state = INITIAL_STATE, action = {}) => {
         error: payload,
       };
     case USER_ACTION_TYPES.SET_USER_LOGOUT:
-      localStorage.clear();
       return {
         ...state,
         currentUser: null,

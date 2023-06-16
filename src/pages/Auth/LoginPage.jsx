@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { FormContainer, InputField } from "./AuthStyles";
 
-import { Fade, Box, Snackbar, InputAdornment, Typography } from "@mui/material";
+import { Fade, Box, Snackbar, InputAdornment, Typography, Button, Stack } from "@mui/material";
 
 import { LoadingButton } from "@mui/lab";
 
@@ -14,10 +14,8 @@ import {
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  currentUserSelector,
   userErrorSelector,
   userLoadingSelector,
-  userSelectorReducer,
 } from "../../store/user/userSelector";
 import axios from "axios";
 import {
@@ -32,7 +30,7 @@ const defaultFormValues = {
   password: "",
 };
 
-export const LoginPage = ({ handleClose }) => {
+export const LoginPage = ({ handleShowAuth }) => {
   const [formFields, setFormFields] = useState(defaultFormValues);
   const [showPassword, setShowPassword] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
@@ -40,8 +38,7 @@ export const LoginPage = ({ handleClose }) => {
 
   const error = useSelector(userErrorSelector);
   const isLoading = useSelector(userLoadingSelector);
-  const currentUser = useSelector(currentUserSelector);
-
+  
  const navigate = useNavigate()
 
   const dispatch = useDispatch();
@@ -56,13 +53,8 @@ export const LoginPage = ({ handleClose }) => {
     dispatch(FETCH_USER_START());
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/auth/login",
-        userObj,
-        {
-          headers: {
-            Authorization: `Bearer ${currentUser?.token}`,
-          },
-        }
+        "/api/v1/auth/login",
+        userObj
       );
       dispatch(FETCH_USER_SUCCESS(data));
       setSnackbarMessage("logged in successfully ✔");
@@ -70,8 +62,6 @@ export const LoginPage = ({ handleClose }) => {
       setTimeout(() => {
         setShowSnackbar(false);
       }, 2000);
-      if(!error) return
-      handleClose();
       setTimeout(() => {
         navigate("/")
       },3000)
@@ -175,7 +165,7 @@ export const LoginPage = ({ handleClose }) => {
       </Box>
 
       <Box>
-        <LoadingButton
+        <LoadingButton 
           size="large"
           startIcon={<Login />}
           sx={{
@@ -184,7 +174,8 @@ export const LoginPage = ({ handleClose }) => {
             flexDirection: "row",
             width: "200px",
             alignItems: "center",
-            margin: "3em auto",
+            margin: "1em auto",
+            marginTop:"2em"
           }}
           type="submit"
           loading={isLoading}
@@ -193,7 +184,26 @@ export const LoginPage = ({ handleClose }) => {
         >
           LOGIN
         </LoadingButton>
+        <Stack direction={'column'} justifyContent={'center'} alignItems={'center'}>
+        <Typography m={'1em'}>
+        Dont Have An Account ?
+        </Typography>
+        <Button
+        onClick={handleShowAuth}
+         sx={{
+          display: { sm: "flex" },
+          width: { sm: "200px" },
+          margin: { sm: "auto" },
+        }}
+        size="large"
+        variant="outlined"
+        startIcon={<Login/>}
+        >
+          Signup
+        </Button>
+        </Stack>
       </Box>
+
     </FormContainer>
   );
 };

@@ -1,0 +1,9 @@
+.slider-container{
+    width:50vw;
+}
+
+@media only screen and (max-width: 600px){
+   .slider-container{
+    width:95vw;
+   }
+}

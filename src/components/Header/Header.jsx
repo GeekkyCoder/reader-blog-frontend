@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -13,17 +13,18 @@ import {
   Button,
 } from "@mui/material";
 
+import axios from "axios"
+
 import { LogoText, SignUpButton, StyledToolbar, theme } from "./Header.styles";
 
 import { ThemeProvider as ButtonThemeProvider } from "@mui/material";
 import {
-  currentUserSelector,
-  loggedInUserSelector,
-  userSelectorReducer,
-  userTokenSelector,
+  currentUserSelector
 } from "../../store/user/userSelector";
-import { useSelector, useDispatch } from "react-redux";
+import {useSelector,useDispatch } from "react-redux";
 import {
+  FETCH_USER_FAILED,
+  FETCH_USER_START,
   SET_USER_LOGOUT,
 } from "../../store/user/user.actions";
 
@@ -43,21 +44,25 @@ import { Login } from "@mui/icons-material";
 
   const handleMenuClick = (e) => {
     const redirectPath = e.target.textContent;
+
     if (redirectPath === "Logout") {
       dispatch(SET_USER_LOGOUT());
+      setTimeout(()=> {
+        navigate('/')
+      },2000)
     }
     navigate(`${redirectPath.toLowerCase()}`);
   };
 
-  const handleSignUpClick = () => {
+  const handleRegisterClick = () => {
     navigate("/auth");
   };
 
-  const menuItems = ["Profile", "Logout"];
+  const handleLogoClick = () => {
+    navigate('/')
+  }
 
-  const handleLogOut = () => {
-    dispatch(SET_USER_LOGOUT());
-  };
+  const menuItems = ["Profile", "Logout"];
 
   return (
     <AppBar position="sticky">
@@ -73,7 +78,7 @@ import { Login } from "@mui/icons-material";
             variant="h4"
             color={"paleturquoise"}
             component={"a"}
-            href="/"
+            onClick={handleLogoClick}
           >
             READER
           </LogoText>
@@ -84,7 +89,7 @@ import { Login } from "@mui/icons-material";
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: { sx: "50%", sm: currentUser ? "25%" : "30%" },
+            width: { sx: "50%", sm: currentUser ? "15%" : "30%" },
             fontWeight: "bold",
           }}
         >
@@ -126,23 +131,11 @@ import { Login } from "@mui/icons-material";
                 disableElevation
                 variant="contained"
                 color="primary"
-                onClick={handleSignUpClick}
+                onClick={handleRegisterClick}
               >
-                Sign Up
+                Register
               </SignUpButton>
             </ButtonThemeProvider>
-          )}
-
-          {currentUser && (
-            <Button
-              startIcon={<Login />}
-              variant="contained"
-              color="success"
-              size="small"
-              onClick={handleLogOut}
-            >
-              Log out
-            </Button>
           )}
 
           <Tooltip>
@@ -152,7 +145,7 @@ import { Login } from "@mui/icons-material";
             >
               <Avatar
                 src={
-                  currentUser?.profileImage ||
+                  currentUser?.user?.profileImage ||
                   "https://svgsilh.com/svg/659651.svg"
                 }
                 alt="Remy Sharp"
