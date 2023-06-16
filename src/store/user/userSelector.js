@@ -1,5 +1,3 @@
-export const userTokenSelector = (state) => state.user.currentUser?.token;
-
 export const currentUserSelector = state => state.user.currentUser
 
 export const userErrorSelector = state => state.user.error
