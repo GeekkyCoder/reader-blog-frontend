@@ -66,6 +66,7 @@ export const LoginPage = ({ handleShowAuth }) => {
         navigate("/")
       },3000)
     } catch (err) {
+      console.log(err)
       dispatch(FETCH_USER_FAILED(err));
       setSnackbarMessage(err.response.data.msg);
       setShowSnackbar(true);

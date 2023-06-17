@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import { Box, Typography, Button } from "@mui/material";
 
@@ -19,7 +19,7 @@ import "./slider.css";
 
 import axios from "axios";
 
-import { UNSPLASH_API_ACCESS_KEY } from "../../utils/unsplash.api";
+import { UNSPLASH_API_ACCESS_KEY } from "../../utils/utils.js";
 
 // import Typewriter from "typewriter-effect";
 
@@ -45,11 +45,11 @@ const LandingPage = () => {
 
   const currentUser = useSelector(currentUserSelector);
 
-  const handleBlogsClick = () => {
+  const handleBlogsClick = useCallback(() => {
     navigate("/content");
-  };
+  },[]);
 
-  const fetchImagesFromUnsplash = async () => {
+  const fetchImagesFromUnsplash = useCallback(async () => {
     let results;
     let imagesPayload = { imageData: [] };
     const unsplash_url = `https://api.unsplash.com/search/photos?query=nature&orientation=landscape&client_id=${UNSPLASH_API_ACCESS_KEY} `;
@@ -69,7 +69,7 @@ const LandingPage = () => {
     } catch (err) {
       console.log(err);
     }
-  };
+  },[unsplashImages]);
 
   useEffect(() => {
     fetchImagesFromUnsplash();

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -13,24 +13,19 @@ import {
   Button,
 } from "@mui/material";
 
-import axios from "axios"
-
 import { LogoText, SignUpButton, StyledToolbar, theme } from "./Header.styles";
 
 import { ThemeProvider as ButtonThemeProvider } from "@mui/material";
+import { currentUserSelector } from "../../store/user/userSelector";
+import { useSelector, useDispatch } from "react-redux";
 import {
-  currentUserSelector
-} from "../../store/user/userSelector";
-import {useSelector,useDispatch } from "react-redux";
-import {
-  FETCH_USER_FAILED,
-  FETCH_USER_START,
   SET_USER_LOGOUT,
 } from "../../store/user/user.actions";
 
-import { Login } from "@mui/icons-material";
+import { TOGGLE_ISMODALOPEN } from "../../store/blogs/blogs.actions";
+import { isModalOpenSelector } from "../../store/blogs/blogs.selector";
 
- const Header = () => {
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const currentUser = useSelector(currentUserSelector);
@@ -47,9 +42,9 @@ import { Login } from "@mui/icons-material";
 
     if (redirectPath === "Logout") {
       dispatch(SET_USER_LOGOUT());
-      setTimeout(()=> {
-        navigate('/')
-      },2000)
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     }
     navigate(`${redirectPath.toLowerCase()}`);
   };
@@ -59,8 +54,13 @@ import { Login } from "@mui/icons-material";
   };
 
   const handleLogoClick = () => {
-    navigate('/')
-  }
+    navigate("/");
+  };
+
+  const handleWriteClick = () => {
+    navigate("/content");
+    dispatch(TOGGLE_ISMODALOPEN(true));
+  };
 
   const menuItems = ["Profile", "Logout"];
 
@@ -94,6 +94,7 @@ import { Login } from "@mui/icons-material";
           }}
         >
           <Button
+            onClick={handleWriteClick}
             sx={{
               color: "white",
               "&:hover": {
@@ -179,5 +180,4 @@ import { Login } from "@mui/icons-material";
   );
 };
 
-
-export default Header
+export default Header;

@@ -1,0 +1,16 @@
+.fade-description {
+  line-height: 25px;
+  height: calc(3 * 25px);
+  overflow: hidden;
+  position: relative;
+}
+
+.fade-description::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 75%;
+  height: 21px;
+  background: linear-gradient(90deg, transparent, white);
+}

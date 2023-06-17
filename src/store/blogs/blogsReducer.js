@@ -4,6 +4,7 @@ const INITIAL_STATE = {
   blogs: [],
   isLoading: false,
   error: null,
+  isModalOpen: false,
 };
 
 const blogsReducer = (state = INITIAL_STATE, action = {}) => {
@@ -13,12 +14,13 @@ const blogsReducer = (state = INITIAL_STATE, action = {}) => {
       return {
         ...state,
         isLoading: true,
+        error:false,
       };
     case BLOGS_ACTION_TYPES.SET_BLOGS_SUCCESS:
       return {
         ...state,
         blogs: payload,
-        isLoading:false,
+        isLoading: false,
       };
     case BLOGS_ACTION_TYPES.SET_BLOGS_FAILED:
       return {
@@ -26,7 +28,14 @@ const blogsReducer = (state = INITIAL_STATE, action = {}) => {
         isLoading: false,
         error: payload,
       };
+    case BLOGS_ACTION_TYPES.SET_ISMODALOPEN:
+      return {
+        ...state,
+        isModalOpen: payload,
+      };
+    default:
+      return state;
   }
 };
 
-module.exports =  blogsReducer;
+module.exports = blogsReducer;

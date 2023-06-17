@@ -1,3 +1,6 @@
+// import dotenv from 'dotenv';
+// dotenv.config();
+
 import { lazy, Suspense, useEffect } from "react";
 
 import LinearPorgressLine  from "./components/LinearProgress/LinearProgress.jsx"
@@ -51,9 +54,8 @@ function App() {
           <Route index element={<LandingPage />}></Route>
           <Route path="/auth" element={<Auth />}></Route>
           <Route path="/profile" element={<Profile />}></Route>
-          <Route path="/content" element={<Content />}></Route>
           <Route path="/content/*">
-            <Route index element={<Article />}></Route>
+            <Route index element={<Content />}></Route>
           </Route>
         </Routes>
       </Box>
