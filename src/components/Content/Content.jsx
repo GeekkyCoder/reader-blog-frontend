@@ -4,11 +4,11 @@ import Articles from "../../pages/Articles/Articles";
 const Content = () => {
   return (
     <Stack direction={"row"} justifyContent={"space-between"}>
-      <Box flex={5} sx={{ border: "2px solid red" }}>
+      <Box flex={{xs:10,sm:5}} >
         <Articles />
       </Box>
 
-      <Box bgcolor={"blue"} height={"100vh"} flex={1}>
+      <Box height={"100vh"} flex={1} display={{xs:"none",sm:"block"}}>
         <Box position={"fixed"}>Sidebar</Box>
       </Box>
     </Stack>

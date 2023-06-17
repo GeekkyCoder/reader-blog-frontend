@@ -74,6 +74,7 @@ const Header = () => {
             alignItems: "center",
           }}
         >
+          <Tooltip title={'Home'}>
           <LogoText
             variant="h4"
             color={"paleturquoise"}
@@ -82,6 +83,8 @@ const Header = () => {
           >
             READER
           </LogoText>
+          </Tooltip>
+        
         </Box>
 
         <Box
@@ -89,10 +92,11 @@ const Header = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            width: { sx: "50%", sm: currentUser ? "15%" : "30%" },
+            width: { sx: "50%", sm: currentUser ? "15%" : "20%" },
             fontWeight: "bold",
           }}
         >
+       { currentUser &&  <Tooltip title={'Write A Blog'}>
           <Button
             onClick={handleWriteClick}
             sx={{
@@ -124,9 +128,11 @@ const Header = () => {
           >
             Write
           </Button>
+          </Tooltip>}
 
           {!currentUser && (
             <ButtonThemeProvider theme={theme}>
+              <Tooltip title={"Register"}>
               <SignUpButton
                 sx={{ display: { xs: "none", sm: "block" } }}
                 disableElevation
@@ -136,10 +142,11 @@ const Header = () => {
               >
                 Register
               </SignUpButton>
+              </Tooltip>
             </ButtonThemeProvider>
           )}
 
-          <Tooltip>
+          <Tooltip title={'Profile'}>
             <IconButton
               onClick={handleMenuClose}
               sx={{ marginLeft: { xs: ".6em", sm: 0 } }}

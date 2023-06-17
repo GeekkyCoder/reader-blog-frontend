@@ -1,11 +1,16 @@
-import { CircularProgress,Box } from "@mui/material";
+import { CircularProgress, Stack } from "@mui/material";
 
 const Skeleton = () => {
   return (
-    <Box>
-      <CircularProgress color="inherit" size={'large'} />
-    </Box>
+    <Stack
+      sx={{ color: "grey.600" }}
+      spacing={2}
+      direction="row"
+      justifyContent={"center"}
+    >
+      <CircularProgress color="inherit"  />
+    </Stack>
   );
 };
 
-export default Skeleton
+export default Skeleton;

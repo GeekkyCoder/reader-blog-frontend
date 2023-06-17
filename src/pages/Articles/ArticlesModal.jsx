@@ -266,11 +266,11 @@ const ArticlesModals = () => {
             </Box>
             <Divider />
             <DialogActions>
-              <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={{xs:1,sm:2}}>
                 <Button
-                  sx={{ width: "150px" }}
+                  sx={{ width:{xs:"100px",sm:"150px"}  }}
                   variant="contained"
-                  size="large"
+                  size="medium"
                   color="error"
                   endIcon={<Cancel />}
                   onClick={handleCancelClick}
@@ -282,8 +282,8 @@ const ArticlesModals = () => {
                   loading={isLoading}
                   variant="contained"
                   color="success"
-                  size="large"
-                  sx={{ width: "150px" }}
+                  size="medium"
+                  sx={{ width:{xs:"100px",sm:"150px"}  }}
                   endIcon={<PostAdd />}
                 >
                   Post

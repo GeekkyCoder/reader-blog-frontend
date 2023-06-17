@@ -106,10 +106,7 @@ const Profile = () => {
 
       dispatch(FETCH_USER_START());
       try {
-        const { data } = await axios.patch(
-          "/api/v1/auth/updateuser",
-          userObj
-        );
+        const { data } = await axios.patch("/api/v1/auth/updateuser", userObj);
         dispatch(FETCH_USER_SUCCESS(data));
         setIsDrawerClose(false);
         setIsSnackBarOpen(true);
@@ -121,7 +118,7 @@ const Profile = () => {
         }, 3000);
         setSnackbarMessage("profile information updated ✔");
       } catch (err) {
-        console.log(err)
+        console.log(err);
         dispatch(FETCH_USER_FAILED(err));
         setIsDrawerClose(true);
         setSnackbarMessage("❌ could not update profile information");
@@ -237,24 +234,29 @@ const Profile = () => {
           <Box
             sx={{
               display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              justifyContent: { xs: "flex-start", xs: "center" },
+              alignItems: { xs: "start", sm: "center" },
             }}
           >
-            <Box component={"form"} sx={{ width: "50%" }} mt={"4em"}>
-              <Stack direction={"column"} spacing={2}>
+            <Box
+              component={"form"}
+              sx={{ width: { xs: "100%", sm: "50%" } }}
+              mt={"4em"}
+            >
+              <Stack direction={"column"} spacing={2} padding={"2em"}>
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    margin: "2em 0",
+                    justifyContent: { xs: "flex-start", sm: "end" },
+                    alignItems: { xs: "flex-start", sm: "center" },
+                    margin: { xs: "0em", sm: "2em 0" },
+                    flexDirection: { xs: "column", sm: "row" },
                   }}
                 >
-                  <Box flex={2}>
+                  <Box flex={{ xs: 1, sm: 2 }}>
                     <TextField
                       disabled={fieldsDisable}
-                      sx={{ width: "70%" }}
+                      sx={{ width: { xs: "100%", sm: "70%" } }}
                       variant="standard"
                       value={formFields.name}
                       name="name"
@@ -262,10 +264,13 @@ const Profile = () => {
                     ></TextField>
                   </Box>
 
-                  <Box sx={{ flex: 2 }}>
+                  <Box flex={{ xs: 1, sm: 2 }}>
                     <TextField
                       disabled={fieldsDisable}
-                      sx={{ width: "70%" }}
+                      sx={{
+                        width: { xs: "100%", sm: "70%" },
+                        mt: { xs: "2em", sm: "0" },
+                      }}
                       variant="standard"
                       value={formFields.email}
                       name="email"
@@ -277,12 +282,13 @@ const Profile = () => {
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    margin: "2em 0",
+                    justifyContent: { xs: "flex-start", sm: "end" },
+                    alignItems: { xs: "flex-start", sm: "center" },
+                    margin: { xs: "0em", sm: "2em 0" },
+                    flexDirection: { xs: "column", sm: "row" },
                   }}
                 >
-                  <Box flex={5}>
+                  <Box flex={{ xs: 1, sm: 5 }} width={"100%"}>
                     <TextField
                       sx={{ width: "100%" }}
                       variant="outlined"

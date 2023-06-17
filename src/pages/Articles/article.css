@@ -14,3 +14,16 @@
   height: 21px;
   background: linear-gradient(90deg, transparent, white);
 }
+
+.blog-image{
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+
+@media only screen and (max-width: 600px){
+   .blog-image{
+    width:100%;
+    height: unset;
+   }
+}

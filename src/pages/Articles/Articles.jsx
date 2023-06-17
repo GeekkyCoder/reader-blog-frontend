@@ -1,12 +1,16 @@
 import {
   Autocomplete,
-  Avatar,
-  Box,
-  Container,
-  Divider,
   Stack,
   TextField,
+  Box,
+  Container,
+  Avatar,
   Typography,
+  Divider,
+  Chip,
+  Tooltip,
+  IconButton,
+  Image
 } from "@mui/material";
 
 // import { Routes, Route } from "react-router-dom";
@@ -17,13 +21,10 @@ import "./article.css";
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import BlogsData from "../../Blogs_MOCK_DATA.json";
 
 import {
   blogsSelector,
   loadingSelector,
-  errorSelector,
-  isModalOpenSelector,
 } from "../../store/blogs/blogs.selector";
 import {
   FETCH_BLOGS_FAILED,
@@ -35,11 +36,13 @@ import ArticlesModals from "./ArticlesModal";
 import Skeleton from "../../components/Skeleton/Skeleton";
 
 import { ArticleContainer, FormContainer } from "./ArticlesModalStyles";
+import { BookmarkAddOutlined } from "@mui/icons-material";
 
 const Articles = () => {
   const dispatch = useDispatch();
 
   const blogs = useSelector(blogsSelector);
+  const isBlogsLoading = useSelector(loadingSelector);
 
   const [formFields, setFormFields] = useState({
     tags: "",
@@ -59,16 +62,14 @@ const Articles = () => {
   const filterOptions = ["oldest", "newest"];
 
   // const blogsError = useSelector(errorSelector);
-  // const isBlogsLoading = useSelector(loadingSelector);
 
   useEffect(() => {
     const fetchAllBlogs = async () => {
       dispatch(FETCH_BLOGS_START());
       try {
         const { data } = await axios.get("/api/v1/posts/allPosts");
-        dispatch(FETCH_BLOGS_SUCCESS(data.posts));
+        dispatch(FETCH_BLOGS_SUCCESS(data.blogs));
       } catch (err) {
-        console.log(err);
         dispatch(FETCH_BLOGS_FAILED(err.response.data.msg));
       }
     };
@@ -84,12 +85,12 @@ const Articles = () => {
   return (
     <>
       <ArticlesModals />
-      <ArticleContainer p={"2em"}>
-        <FormContainer sx={{ my: "2em", px: "2em" }} component={"form"}>
+      <ArticleContainer sx={{border:"2px solid red"}} p={{xs:"0em",sm:"2em"}}>
+        <FormContainer sx={{ my: "2em", px: {xs:"1em",sm:"2em"} }} component={"form"}>
           <Stack
-            direction={"row"}
-            justifyContent={"right"}
-            alignItems={"center"}
+            direction={{xs:"column",sm:'row'}}
+            justifyContent={'right'}
+            alignItems={"end"}
           >
             <Autocomplete
               //  value={tags}
@@ -99,7 +100,7 @@ const Articles = () => {
               onInputChange={handleFormFieldsChange}
               name="tags"
               options={tagsOptions}
-              sx={{ width: 200, mr: "2em" }}
+              sx={{ width: 200, mr: {xs:'0em',sm:'2em'},mb:{xs:"1em"},sm:"0em" }}
               renderInput={(params) => (
                 <TextField {...params} label="catogories" />
               )}
@@ -120,44 +121,79 @@ const Articles = () => {
           </Stack>
         </FormContainer>
 
-        {blogs.map((blog) => {
-          return (
-            <Container>
-              <Stack direction={"column"}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Avatar src={blog.profileImage} alt={blog.name} />
-                  <Typography component={"h4"}>{blog.name}</Typography>
-                </Box>
+        {!isBlogsLoading ? (
+          <Box>
+            {blogs &&
+              blogs.map((blog) => {
+                return (
+                  <Container key={blog._id}>
+                    <Stack
+                      direction={"column"}
+                      py={"2em"}
+                      px={".5em"}
+                      pb={"1em"}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center",mb:{xs:"1em",sm:'0em'} }}>
+                        <Avatar src={blog.profileImage} alt={blog.name} />
+                        <Typography ml={{xs:".5em",sm:"0em"}} component={"h3"} variant="p" fontWeight={600}>{blog.name}</Typography>
+                      </Box>
 
-                <Stack
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Box flex={5}>
-                    <Typography component={"h2"} variant="p" fontWeight={800}>
-                      {blog.title}
-                    </Typography>
-                    <Typography className="fade-description" component={"p"}>
-                      {blog.description}
-                    </Typography>
-                  </Box>
-                  <Box flex={2}>
-                    <img
-                      width={"150px"}
-                      height={"150px"}
-                      style={{ objectFit: "cover" }}
-                      src={blog.image}
-                      alt={blog.title}
-                    />
-                  </Box>
-                </Stack>
+                      <Stack
+                        direction={{xs:'column',sm:"row"}}
+                        justifyContent={"space-between"}
+                        alignItems={{xs:"start",sm:"center"}}
+                        display={'flex'}
+                        
+                      >
+                        <Box flex={5} order={{xs:2,sm:2}}>
+                          <Typography
+                            component={"h2"}
+                            my={{xs:"1em",sm:".5em"}}
+                            variant="p"
+                            fontWeight={800}
+                          >
+                            {blog.title}
+                          </Typography>
+                          <Typography
+                            mr={".5em"}
+                            className="fade-description"
+                            component={"p"}
+                          >
+                            {blog.description}
+                          </Typography>
+                          <Stack my={"1em"} direction={'row'} alignItems={"center"}>
+                            <Chip
+                              variant="filled"
+                              label={blog.tags}
+                              size="large"
+                            />
+                            <Tooltip title={"save"} sx={{ml:"1em"}}>
+                              <IconButton>
+                                <BookmarkAddOutlined />
+                              </IconButton>
+                            </Tooltip>
+                          </Stack>
+                        </Box>
 
-                <Divider />
-              </Stack>
-            </Container>
-          );
-        })}
+                        <Box flex={2} order={{xs:1,sm:1}}>
+                         <img
+                          className='blog-image'
+                            style={{ objectFit: "cover" }}
+                            src={blog.image}
+                            alt={blog.title}
+                          />
+                        </Box>
+                      </Stack>
+
+                      <Divider />
+                    </Stack>
+                  </Container>
+                );
+              })}
+          </Box>
+        ) : (
+          <Skeleton />
+        )}
       </ArticleContainer>
     </>
   );
