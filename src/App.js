@@ -13,6 +13,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { FETCH_USER_FAILED, FETCH_USER_START, FETCH_USER_SUCCESS } from "./store/user/user.actions.js";
 import { currentUserSelector } from "./store/user/userSelector.js";
+import SingleArticle from "./pages/Articles/SingleArticle.jsx";
 
 const Header = lazy(() => import("./components/Header/Header.jsx"));
 const LandingPage = lazy(() => import("./pages/landing/landingPage.jsx"));
@@ -20,9 +21,6 @@ const Profile = lazy(() => import("./pages/profile/Profile.jsx"));
 const Content = lazy(() => import("./components/Content/Content.jsx"));
 const Article = lazy(() => import("./pages/Articles/Articles.jsx"));
 const Auth = lazy(() => import("./pages/Auth/Auth.jsx"));
-
-
-
 
 
 function App() {
@@ -34,9 +32,12 @@ function App() {
   const fetchCurrentUser = async ()=> {
     dispatch(FETCH_USER_START())
     try{
-      const {data} = await axios.get("/api/v1/auth/currentUser")
+      const {data} = await axios.get("http://localhost:8000/api/v1/auth/currentUser",{
+        withCredentials:true
+      })
       dispatch(FETCH_USER_SUCCESS(data))
     }catch(err){
+      console.log(err)
       dispatch(FETCH_USER_FAILED(err))
     }
   }
@@ -56,6 +57,7 @@ function App() {
           <Route path="/profile" element={<Profile />}></Route>
           <Route path="/content/*">
             <Route index element={<Content />}></Route>
+            <Route path="blog/:blogId" element={<SingleArticle />}></Route>
           </Route>
         </Routes>
       </Box>

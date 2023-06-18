@@ -52,7 +52,7 @@ const LandingPage = () => {
   const fetchImagesFromUnsplash = useCallback(async () => {
     let results;
     let imagesPayload = { imageData: [] };
-    const unsplash_url = `https://api.unsplash.com/search/photos?query=nature&orientation=landscape&client_id=${UNSPLASH_API_ACCESS_KEY} `;
+    const unsplash_url = `https://api.unsplash.com/search/photos?query=nature&orientation=landscape&client_id=RnRdjYOOGF3VMlN773x5grn8lAv6YbsPJ8qUY5bgAVw `;
     try {
       const { data } = await axios.get(unsplash_url);
 

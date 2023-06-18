@@ -69,8 +69,10 @@ const Profile = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.post(
-        "/api/v1/auth/uploadUserProfileImage",
-        formData
+        "http://localhost:8000/api/v1/auth/uploadUserProfileImage",
+        formData,{
+          withCredentials:true
+        }
       );
       setIsLoading(false);
       setFileChoosen(false);
@@ -84,7 +86,7 @@ const Profile = () => {
     } catch (err) {
       setIsSnackBarOpen(true);
       setError(true);
-      setSnackbarMessage(err.response.data.msg);
+      setSnackbarMessage("❌profile picture update failed");
       setIsLoading(false);
       setFileChoosen(false);
       setTimeout(() => {
@@ -106,7 +108,9 @@ const Profile = () => {
 
       dispatch(FETCH_USER_START());
       try {
-        const { data } = await axios.patch("/api/v1/auth/updateuser", userObj);
+        const { data } = await axios.patch("http://localhost:8000/api/v1/auth/updateuser", userObj,{
+          withCredentials:true
+        });
         dispatch(FETCH_USER_SUCCESS(data));
         setIsDrawerClose(false);
         setIsSnackBarOpen(true);

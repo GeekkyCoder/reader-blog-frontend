@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { useState } from "react";
 
 import {
   Box,
@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  Slide,
   TextField,
   Autocomplete,
   Typography,
@@ -15,7 +14,11 @@ import {
   Button,
   Snackbar,
   Alert,
+  Tooltip,
+  styled,
 } from "@mui/material";
+
+import { tooltipClasses } from "@mui/material/Tooltip";
 
 import { FormContainer, InputField } from "./ArticlesModalStyles";
 
@@ -23,15 +26,8 @@ import { LoadingButton } from "@mui/lab";
 import { Cancel, PostAdd, Save } from "@mui/icons-material";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  FETCH_BLOGS_FAILED,
-  FETCH_BLOGS_START,
-  TOGGLE_ISMODALOPEN,
-} from "../../store/blogs/blogs.actions";
-import {
-  isModalOpenSelector,
-} from "../../store/blogs/blogs.selector";
-import { CLOUDINARY_CLOUD_NAME } from "../../utils/utils";
+import { TOGGLE_ISMODALOPEN } from "../../store/blogs/blogs.actions";
+import { isModalOpenSelector } from "../../store/blogs/blogs.selector";
 
 const viewOptions = ["public", "private", "followers"];
 
@@ -46,6 +42,17 @@ const tagsOptions = [
 ];
 
 const ArticlesModals = () => {
+  const BootstrapTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} arrow classes={{ popper: className }} />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.arrow}`]: {
+      color: theme.palette.common.black,
+    },
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: theme.palette.common.black,
+    },
+  }));
+
   const dispatch = useDispatch();
 
   const isModalOpen = useSelector(isModalOpenSelector);
@@ -53,8 +60,8 @@ const ArticlesModals = () => {
   const [snackBarMessage, setSnackBarMessage] = useState("");
   const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
   const [isImageUpload, setIsImageUpload] = useState(false);
-  const [isLoading,setIsloading] = useState(false)
-  const [error,setError] = useState(false)
+  const [isLoading, setIsloading] = useState(false);
+  const [error, setError] = useState(false);
 
   const [postFields, setPostFields] = useState({
     title: "",
@@ -64,31 +71,44 @@ const ArticlesModals = () => {
     view: "",
   });
 
-  //   const Transition = forwardRef(function Transition(props, ref) {
-  //     return <Slide direction="up" ref={ref} {...props} />;
-  //   });
-
   const handlPostSubmit = async (e) => {
     e.preventDefault();
 
     if (!postFields.title || !postFields.description) return;
 
-    setIsloading(true)
-    setError(false)
+    setIsloading(true);
+    setError(false);
+
+    const payload = {
+      title:postFields.title,
+      description:postFields.description,
+      image:postFields.image || "https://images.unsplash.com/photo-1542254503-d802f00c2342?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1032&q=80",
+      tags:postFields.tags || "general",
+      view:postFields.view || "public"
+    }
+
     try {
-      await axios.post("/api/v1/posts/createPost", postFields);
+      await axios.post(
+        "http://localhost:8000/api/v1/posts/createPost",
+        payload,
+        {
+          withCredentials: true,
+        }
+      );
       setSnackBarMessage("posted");
-      setIsloading(false)
-      setIsImageUpload(false)
+      setIsloading(false);
+      setIsImageUpload(false);
       setIsSnackBarOpen(true);
       setTimeout(() => {
         setIsSnackBarOpen(false);
       }, 3000);
+      dispatch(TOGGLE_ISMODALOPEN(false));
     } catch (err) {
+      console.log(err);
       setSnackBarMessage("failed to post");
-      setError(true)
+      setError(true);
       setIsSnackBarOpen(true);
-      setIsloading(false)
+      setIsloading(false);
       setTimeout(() => {
         setIsSnackBarOpen(false);
       }, 3000);
@@ -106,6 +126,7 @@ const ArticlesModals = () => {
       setPostFields({ ...postFields, [name]: e.target.files[0] });
       setIsImageUpload(true);
     } else {
+      setIsImageUpload(false)
       setPostFields({ ...postFields, [name]: value });
     }
   };
@@ -116,36 +137,42 @@ const ArticlesModals = () => {
     const formData = new FormData();
     formData.append("file", imageFile);
     formData.append("upload_preset", "lfueeeon");
-    setIsloading(true)
-    setError(false)
+    setIsloading(true);
+    setError(false);
     try {
       const { data } = await axios.post(
-        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        `https://api.cloudinary.com/v1_1/dczhcauwf/image/upload`,
         formData
       );
       setPostFields({ ...postFields, image: data.secure_url });
-      setIsSnackBarOpen(true)
-      setIsloading(false)
-      setSnackBarMessage('image uploaded successfully!')
-      setTimeout(()=> {
-        setIsSnackBarOpen(false)
-      },3000)
+      setIsSnackBarOpen(true);
+      setIsloading(false);
+      setSnackBarMessage("image uploaded successfully!");
+      setTimeout(() => {
+        setIsSnackBarOpen(false);
+      }, 3000);
     } catch (err) {
-      setError(true)
-      setIsSnackBarOpen(true)
-      setIsloading(false)
-      setSnackBarMessage('image upload failed!')
-      setTimeout(()=> {
-        setIsSnackBarOpen(false)
-      },3000)
-
+      console.log(err);
+      setError(true);
+      setIsSnackBarOpen(true);
+      setIsloading(false);
+      setSnackBarMessage("image upload failed!");
+      setTimeout(() => {
+        setIsSnackBarOpen(false);
+      }, 3000);
     }
   };
 
   return (
     <>
-      <Snackbar message={snackBarMessage} open={isSnackBarOpen} anchorOrigin={{ vertical:"top", horizontal:"center" }}>
-        <Alert variant="filled" severity={error ? "error" : "success"}>{snackBarMessage}</Alert>
+      <Snackbar
+        message={snackBarMessage}
+        open={isSnackBarOpen}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert variant="filled" severity={error ? "error" : "success"}>
+          {snackBarMessage}
+        </Alert>
       </Snackbar>
       <Dialog
         sx={{ fontFamily: "cursive" }}
@@ -239,17 +266,25 @@ const ArticlesModals = () => {
             </Box>
 
             <Box my={"2em"} sx={{ display: "flex", alignItems: "center" }}>
-              <Box>
-                <InputField
-                  type="file"
-                  variant="outlined"
-                  size="medium"
-                  onChange={hanldePostFieldChanges}
-                  name="image"
-                ></InputField>
-              </Box>
+              <BootstrapTooltip
+                placement="top-start"
+                title={
+                  "we will add a dummy/blurry image,incase if you dont want to upload an image!!!"
+                }
+              >
+                <Box>
+                  <InputField
+                    type="file"
+                    variant="outlined"
+                    size="medium"
+                    onChange={hanldePostFieldChanges}
+                    name="image"
+                  ></InputField>
+                </Box>
+              </BootstrapTooltip>
 
               <Box>
+                <Tooltip title={!isImageUpload ? "choose an image first" : ""}>
                 <LoadingButton
                   sx={{ marginLeft: "2em" }}
                   variant="contained"
@@ -262,14 +297,15 @@ const ArticlesModals = () => {
                 >
                   Upload
                 </LoadingButton>
+                </Tooltip>
               </Box>
             </Box>
             <Divider />
             <DialogActions>
-              <Stack direction="row" spacing={{xs:1,sm:2}}>
+              <Stack direction="row" spacing={{ xs: 1, sm: 2 }}>
                 <Button
-                  sx={{ width:{xs:"100px",sm:"150px"}  }}
-                  variant="contained"
+                  sx={{ width: { xs: "100px", sm: "150px" } }}
+                  variant="text"
                   size="medium"
                   color="error"
                   endIcon={<Cancel />}
@@ -280,13 +316,13 @@ const ArticlesModals = () => {
                 <LoadingButton
                   type="submit"
                   loading={isLoading}
-                  variant="contained"
+                  variant="text"
                   color="success"
                   size="medium"
-                  sx={{ width:{xs:"100px",sm:"150px"}  }}
+                  sx={{ width: { xs: "100px", sm: "150px" } }}
                   endIcon={<PostAdd />}
                 >
-                  Post
+                  Publish
                 </LoadingButton>
               </Stack>
             </DialogActions>

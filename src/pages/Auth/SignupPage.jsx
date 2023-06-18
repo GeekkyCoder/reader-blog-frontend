@@ -76,8 +76,10 @@ export const Signup = ({handleShowAuth}) => {
 
     try {
       const { data } = await axios.post(
-        "/api/v1/auth/register",
-        userObj
+        "http://localhost:8000/api/v1/auth/register",
+        userObj,{
+          withCredentials:true
+        }
       );
       dispatch(FETCH_USER_SUCCESS(data));
       setFormFields({
@@ -93,8 +95,9 @@ export const Signup = ({handleShowAuth}) => {
         setIsSnackBarOpen(false)
       },3000)
     } catch (err) {
+      console.log(err)
       dispatch(FETCH_USER_FAILED(err));
-      setSnackbarMessage(err.response.data.msg)
+      setSnackbarMessage(err?.response?.data?.msg || "failed to register")
       setIsSnackBarOpen(true);
       setTimeout(() => {
         setIsSnackBarOpen(false);

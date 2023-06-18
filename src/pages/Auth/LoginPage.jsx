@@ -43,6 +43,8 @@ export const LoginPage = ({ handleShowAuth }) => {
 
   const dispatch = useDispatch();
 
+  console.log(formFields)
+
   const handleLoginFormSubmit = async (e) => {
     e.preventDefault();
     const userObj = {
@@ -52,10 +54,9 @@ export const LoginPage = ({ handleShowAuth }) => {
 
     dispatch(FETCH_USER_START());
     try {
-      const { data } = await axios.post(
-        "/api/v1/auth/login",
-        userObj
-      );
+      const {data} = await axios.post('http://localhost:8000/api/v1/auth/login',userObj,{
+        withCredentials:true
+      })
       dispatch(FETCH_USER_SUCCESS(data));
       setSnackbarMessage("logged in successfully ✔");
       setShowSnackbar(true);
@@ -68,7 +69,7 @@ export const LoginPage = ({ handleShowAuth }) => {
     } catch (err) {
       console.log(err)
       dispatch(FETCH_USER_FAILED(err));
-      setSnackbarMessage(err.response.data.msg);
+      setSnackbarMessage('failed to login');
       setShowSnackbar(true);
       setTimeout(() => {
         setShowSnackbar(false);
@@ -87,6 +88,7 @@ export const LoginPage = ({ handleShowAuth }) => {
   };
 
   const { email, password } = formFields;
+
 
   return (
     <FormContainer component={"form"} onSubmit={handleLoginFormSubmit}>

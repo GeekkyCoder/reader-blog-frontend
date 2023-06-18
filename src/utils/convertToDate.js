@@ -1,8 +1,7 @@
-export const yyMMDDFormat = (dateFormat) => {
-  const dateObj = new Date(dateFormat);
+export const formatDate = (date) => {
+  const dateObj = new Date(date);
+  const options = { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" };
+  const formattedDate = dateObj.toLocaleDateString("en-US", options);
 
-  const year = dateObj.getUTCFullYear().toString().slice(-2);
-  const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, "0");
-  const day = dateObj.getUTCDate().toString().padStart(2, "0");
-  return `${year}:${month}:${day}`;
+  return formattedDate
 };
