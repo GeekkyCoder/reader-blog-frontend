@@ -19,8 +19,6 @@ import "./slider.css";
 
 import axios from "axios";
 
-import { UNSPLASH_API_ACCESS_KEY } from "../../utils/utils.js";
-
 // import Typewriter from "typewriter-effect";
 
 const sliderSettings = {

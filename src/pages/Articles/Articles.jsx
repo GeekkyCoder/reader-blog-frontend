@@ -64,18 +64,11 @@ const Articles = () => {
   const blogs = useSelector(blogsSelector);
   const isBlogsLoading = useSelector(loadingSelector);
 
-  const [formFields, setFormFields] = useState({
-    tags: "",
-    filter: "",
-  });
-
-  // const blogsError = useSelector(errorSelector);
-
   useEffect(() => {
     const fetchAllBlogs = async () => {
       dispatch(FETCH_BLOGS_START());
       try {
-        const { data } = await axios.get(`http://localhost:8000/api/v1/posts/allPosts?tags=general&sort=oldest`);
+        const { data } = await axios.get(`http://localhost:8000/api/v1/posts/allPosts?tags=${tag}&sort=${filter}`);
         dispatch(FETCH_BLOGS_SUCCESS(data.blogs));
       } catch (err) {
         console.log(err)

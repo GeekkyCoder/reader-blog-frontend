@@ -49,13 +49,11 @@ const Header = () => {
 
         return;
       } catch (err) {
-        console.log(err);
         return;
       }
     }
 
     if (redirectPath === "my blogs") {
-      console.log("yes");
       return;
     }
 
@@ -71,7 +69,6 @@ const Header = () => {
   };
 
   const handleWriteClick = () => {
-    navigate("/content");
     dispatch(TOGGLE_ISMODALOPEN(true));
   };
 
