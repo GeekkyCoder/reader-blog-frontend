@@ -41,6 +41,23 @@ const sliderSettings = {
   swipeToSlide: true,
   arrows: false,
   dots: false,
+  pauseOnHover: true,
+  responsive: [
+    {
+      breakpoint: 768,
+      settings: {
+        arrows: false,
+        slidesToShow: 3,
+      },
+    },
+    {
+      breakpoint: 480,
+      settings: {
+        arrows: false,
+        slidesToShow: 1,
+      },
+    },
+  ],
 };
 
 const SingleArticle = () => {
@@ -82,10 +99,9 @@ const SingleArticle = () => {
           const { data } = await axios.get(
             `http://localhost:8000/api/v1/posts/getMoreUserPosts?postId=${blogPost._id}&userId=${blogPost.createdBy}`
           );
-          setError(false);
           setFilteredPosts(data.filteredPosts);
         } catch (err) {
-          setError(true);
+          console.log(err)
         }
       }
     };
@@ -110,8 +126,13 @@ const SingleArticle = () => {
           display={"flex"}
           mt={"3em"}
         >
-          <Box width={"70%"}>
-            <Typography variant="h2" component="h4" fontWeight={800}>
+          <Box width={{ xs: "100%", sm: "70%" }}>
+            <Typography
+              variant="h2"
+              component={"h3"}
+              fontWeight={{ xs: 600, sm: 800 }}
+              fontSize={{ xs: "2rem", sm: "3rem" }}
+            >
               {blogPost.title}
             </Typography>
 
@@ -129,7 +150,7 @@ const SingleArticle = () => {
                 ></Avatar>
               </Tooltip>
 
-              <Box ml={".5em"}>
+              <Box ml={".5em"} mb={{xs:"1em",sm:"0em"}}>
                 <Typography component={"p"} variant="p">
                   {blogPost?.name}
                 </Typography>
@@ -161,7 +182,7 @@ const SingleArticle = () => {
               <Typography
                 color={"GrayText"}
                 position={"absolute"}
-                bottom={"-1rem"}
+                bottom={{ xs: "-1.5rem", sm: "-1rem" }}
                 right={"0"}
                 component={"p"}
                 variant="p"
@@ -220,8 +241,12 @@ const SingleArticle = () => {
             </Typography>
 
             <Box bgcolor={"#FAFAFA"} p={"1em"}>
-              <Box display={"flex"}>
-                <Box flex={2} py={"1em"}>
+              <Box
+                display={"flex"}
+                alignItems={{ xs: "center", sm: "flex-start" }}
+                justifyContent={{ xs: "center", sm: "flex-start" }}
+              >
+                <Box flex={{ xs: 1, sm: 2 }} py={"1em"}>
                   <img
                     style={{
                       width: "100px",
@@ -256,73 +281,75 @@ const SingleArticle = () => {
 
               <Divider />
 
-             {filteredPosts.length > 0 && <Box my={"2em"}>
-                <Typography
-                  py={"2em"}
-                  component={"p"}
-                  variant="p"
-                  fontWeight={600}
-                >
-                  More From {blogPost.name} 👇
-                </Typography>
+              {filteredPosts.length > 0 && (
+                <Box my={"2em"}>
+                  <Typography
+                    py={"2em"}
+                    component={"p"}
+                    variant="p"
+                    fontWeight={600}
+                  >
+                    More From {blogPost.name} 👇
+                  </Typography>
 
-                <Box>
-                  <Slider {...sliderSettings} className="slider-styles">
-                    {filteredPosts.map((post) => {
-                      return (
-                        <Card
-                          key={post._id}
-                          maxWidth={250}
-                          sx={{ height: "400px" }}
-                        >
-                          <CardMedia
-                            component="img"
-                            alt={post.title}
-                            height="140"
-                            image={post.image}
-                          />
-                          <CardContent>
-                            <Box display={"flex"} alignItems={"center"}>
-                              <Avatar
-                                src={post.profileImage}
-                                alt={post.name}
-                              ></Avatar>
+                  <Box>
+                    <Slider {...sliderSettings} className="slider-styles">
+                      {filteredPosts.map((post) => {
+                        return (
+                          <Card
+                            key={post._id}
+                            maxWidth={250}
+                            sx={{ height: "400px" }}
+                          >
+                            <CardMedia
+                              component="img"
+                              alt={post.title}
+                              height="140"
+                              image={post.image}
+                            />
+                            <CardContent>
+                              <Box display={"flex"} alignItems={"center"}>
+                                <Avatar
+                                  src={post.profileImage}
+                                  alt={post.name}
+                                ></Avatar>
+                                <Typography
+                                  ml={".5em"}
+                                  component={"p"}
+                                  variant="p"
+                                  fontWeight={200}
+                                >
+                                  {post.name}
+                                </Typography>
+                              </Box>
                               <Typography
-                                ml={".5em"}
+                                maxWidth={300}
+                                my={".5em"}
+                                component={"h3"}
+                                variant="p"
+                                fontWeight={800}
+                              >
+                                {post.title}
+                              </Typography>
+                              <Typography
+                                maxWidth={400}
+                                my={".5em"}
+                                lineHeight={"25px"}
                                 component={"p"}
                                 variant="p"
-                                fontWeight={200}
+                                color={"GrayText"}
                               >
-                                {post.name}
+                                {post.description.slice(0, 150)}...
                               </Typography>
-                            </Box>
-                            <Typography
-                              maxWidth={300}
-                              my={".5em"}
-                              component={"h3"}
-                              variant="p"
-                              fontWeight={800}
-                            >
-                              {post.title}
-                            </Typography>
-                            <Typography
-                              maxWidth={400}
-                              my={".5em"}
-                              lineHeight={"25px"}
-                              component={"p"}
-                              variant="p"
-                              color={"GrayText"}
-                            >
-                              {post.description.slice(0, 150)}...
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </Slider>
+                              <Chip variant="filled" label={post.tags}/>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </Slider>
+                  </Box>
                 </Box>
-              </Box>}
-
+              )}
             </Box>
           </Box>
         </Stack>
