@@ -78,10 +78,7 @@ const SingleArticle = () => {
     const fetchSingleBlogPost = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:8000/api/v1/posts/blogs?post=${blogId}`,
-          {
-            withCredentials: true,
-          }
+          `/api/v1/posts/blogs?post=${blogId}`
         );
         setBlogPost(data.post);
         setIsSnackBarOpen(true);

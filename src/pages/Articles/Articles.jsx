@@ -68,9 +68,8 @@ const Articles = () => {
     const fetchAllBlogs = async () => {
       dispatch(FETCH_BLOGS_START());
       try {
-        const { data } = await axios.get(`http://localhost:8000/api/v1/posts/allPosts?tags=${tag}&sort=${filter}`);
-        console.log(data)
-        dispatch(FETCH_BLOGS_SUCCESS(data.blogs));
+        const { data } = await axios.get(`/api/v1/posts/allPosts?tags=${tag}&sort=${filter}`);
+        dispatch(FETCH_BLOGS_SUCCESS(data?.blogs));
       } catch (err) {
         console.log(err)
         dispatch(FETCH_BLOGS_FAILED(err?.response?.data?.msg));

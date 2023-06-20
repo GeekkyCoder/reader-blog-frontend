@@ -68,10 +68,8 @@ const Profile = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/auth/uploadUserProfileImage",
-        formData,{
-          withCredentials:true
-        }
+        "/api/v1/auth/uploadUserProfileImage",
+        formData
       );
       setIsLoading(false);
       setFileChoosen(false);
@@ -106,9 +104,7 @@ const Profile = () => {
 
       dispatch(FETCH_USER_START());
       try {
-        const { data } = await axios.patch("http://localhost:8000/api/v1/auth/updateuser", userObj,{
-          withCredentials:true
-        });
+        const { data } = await axios.patch("/api/v1/auth/updateuser", userObj);
         dispatch(FETCH_USER_SUCCESS(data));
         setIsDrawerClose(false);
         setIsSnackBarOpen(true);
@@ -155,7 +151,7 @@ const Profile = () => {
         setFormFields({ ...formFields, [name]: e.target.files[0] });
         setFileChoosen(true);
         return;
-      } 
+      }
       setFormFields({ ...formFields, [name]: value });
     },
     [currentUser, formFields]

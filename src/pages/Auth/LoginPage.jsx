@@ -58,9 +58,7 @@ export const LoginPage = ({ handleShowAuth }) => {
 
     dispatch(FETCH_USER_START());
     try {
-      const {data} = await axios.post('http://localhost:8000/api/v1/auth/login',userObj,{
-        withCredentials:true
-      })
+      const {data} = await axios.post('/api/v1/auth/login',userObj)
       dispatch(FETCH_USER_SUCCESS(data));
       setSnackbarMessage("logged in successfully ✔");
       setShowSnackbar(true);

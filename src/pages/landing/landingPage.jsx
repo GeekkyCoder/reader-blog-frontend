@@ -67,7 +67,7 @@ const LandingPage = () => {
     } catch (err) {
       console.log(err);
     }
-  },[unsplashImages]);
+  },[]);
 
   useEffect(() => {
     fetchImagesFromUnsplash();

@@ -40,9 +40,7 @@ const Header = () => {
 
     if (redirectPath === "Logout") {
       try {
-        await axios.delete("http://localhost:8000/api/v1/auth/logout",{
-          withCredentials:true
-        });
+        await axios.delete("/api/v1/auth/logout");
         dispatch(SET_USER_LOGOUT());
         setTimeout(() => {
           navigate("/");
