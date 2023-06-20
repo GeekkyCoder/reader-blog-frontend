@@ -94,11 +94,8 @@ const ArticlesModals = () => {
 
     try {
       await axios.post(
-        "http://localhost:8000/api/v1/posts/createPost",
-        payload,
-        {
-          withCredentials: true,
-        }
+        "/api/v1/posts/createPost",
+        payload
       );
       setSnackBarMessage("posted");
       setIsloading(false);

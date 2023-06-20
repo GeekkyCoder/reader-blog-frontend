@@ -10,7 +10,7 @@ import {
   Chip,
   Tooltip,
   IconButton,
-  Image
+  Image,
 } from "@mui/material";
 
 // import { Routes, Route } from "react-router-dom";
@@ -38,7 +38,8 @@ import Skeleton from "../../components/Skeleton/Skeleton";
 import { ArticleContainer, FormContainer } from "./ArticlesModalStyles";
 import { BookmarkAddOutlined } from "@mui/icons-material";
 
-import { useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import UserBlogsHome from "./UserBlogsHome";
 
 const tagsOptions = [
   "technology",
@@ -52,14 +53,13 @@ const tagsOptions = [
 
 const filterOptions = ["oldest", "newest"];
 
-
 const Articles = () => {
-  const [tag,setTag] = useState("")
-  const [filter,setFilter] = useState("")
-  const [currentPage,setCurrentPage] = useState(1)
+  const [tag, setTag] = useState("");
+  const [filter, setFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const blogs = useSelector(blogsSelector);
   const isBlogsLoading = useSelector(loadingSelector);
@@ -68,56 +68,63 @@ const Articles = () => {
     const fetchAllBlogs = async () => {
       dispatch(FETCH_BLOGS_START());
       try {
-        const { data } = await axios.get(`/api/v1/posts/allPosts?tags=${tag}&sort=${filter}`);
+        const { data } = await axios.get(
+          `/api/v1/posts/allPosts?tags=${tag}&sort=${filter}`
+        );
         dispatch(FETCH_BLOGS_SUCCESS(data?.blogs));
       } catch (err) {
-        console.log(err)
+        console.log(err);
         dispatch(FETCH_BLOGS_FAILED(err?.response?.data?.msg));
       }
     };
 
     fetchAllBlogs();
-  }, [tag,filter]);
-
+  }, [tag, filter]);
 
   const handleClickOnBlog = (blogId) => {
-    navigate(`/content/blog/${blogId}`)
-  }
-
+    navigate(`/content/blog/${blogId}`);
+  };
 
   return (
     <>
       <ArticlesModals />
-      <ArticleContainer  p={{xs:"0em",sm:"2em"}}>
-        <FormContainer sx={{ my: "2em", px: {xs:"1em",sm:"2em"} }} component={"form"}>
+      <ArticleContainer p={{ xs: "0em", sm: "2em" }}>
+        <FormContainer
+          sx={{ my: "2em", px: { xs: "1em", sm: "2em" } }}
+          component={"form"}
+        >
           <Stack
-            direction={{xs:"column",sm:'row'}}
-            justifyContent={'right'}
+            direction={{ xs: "column", sm: "row" }}
+            justifyContent={"right"}
             alignItems={"center"}
           >
             <Autocomplete
-               value={tag}
+              value={tag}
               // inputValue={tags}
               fontFamily={"inherit"}
               size="medium"
-              onChange={(e,value)=> {
-                setTag(value)
-             }}
+              onChange={(e, value) => {
+                setTag(value);
+              }}
               name="tags"
               options={tagsOptions}
-              sx={{ width: 200, mr: {xs:'0em',sm:'2em'},mb:{xs:"1em",sm:"0em" }}}
+              sx={{
+                width: 200,
+                mr: { xs: "0em", sm: "2em" },
+                mb: { xs: "1em", sm: "0em" },
+              }}
               renderInput={(params) => (
                 <TextField {...params} label="catogories" />
               )}
             />
 
             <Autocomplete
-            value={filter}
+              value={filter}
               // inputValue={view}
               fontFamily={"inherit"}
               size="medium"
-              onChange={(e,value)=> {
-                 setFilter(value)
+              onChange={(e, value) => {
+                setFilter(value);
               }}
               name="filter"
               options={filterOptions}
@@ -134,29 +141,44 @@ const Articles = () => {
             {blogs &&
               blogs.map((blog) => {
                 return (
-                  <Container key={blog._id} onClick={() => handleClickOnBlog(blog._id)}>
+                  <Container
+                    key={blog._id}
+                    onClick={() => handleClickOnBlog(blog._id)}
+                  >
                     <Stack
                       direction={"column"}
                       py={"2em"}
                       px={".5em"}
                       pb={"1em"}
                     >
-                      <Box sx={{ display: "flex", alignItems: "center",mb:{xs:"1em",sm:'0em'} }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          mb: { xs: "1em", sm: "0em" },
+                        }}
+                      >
                         <Avatar src={blog.profileImage} alt={blog.name} />
-                        <Typography ml={{xs:".5em",sm:"1em"}} component={"h3"} variant="p" fontWeight={600}>{blog.name}</Typography>
+                        <Typography
+                          ml={{ xs: ".5em", sm: "1em" }}
+                          component={"h3"}
+                          variant="p"
+                          fontWeight={600}
+                        >
+                          {blog.name}
+                        </Typography>
                       </Box>
 
                       <Stack
-                        direction={{xs:'column',sm:"row"}}
+                        direction={{ xs: "column", sm: "row" }}
                         justifyContent={"space-between"}
-                        alignItems={{xs:"start",sm:"center"}}
-                        display={'flex'}
-                        
+                        alignItems={{ xs: "start", sm: "center" }}
+                        display={"flex"}
                       >
-                        <Box flex={5} order={{xs:2,sm:1}}>
+                        <Box flex={5} order={{ xs: 2, sm: 1 }}>
                           <Typography
                             component={"h2"}
-                            my={{xs:"1em",sm:".5em"}}
+                            my={{ xs: "1em", sm: ".5em" }}
                             variant="p"
                             fontWeight={800}
                           >
@@ -164,18 +186,22 @@ const Articles = () => {
                           </Typography>
                           <Typography
                             mr={".5em"}
-                            className="fade-description"
+                            className="fade-description fade-description-lines"
                             component={"p"}
                           >
                             {blog.description}
                           </Typography>
-                          <Stack my={"1em"} direction={'row'} alignItems={"center"}>
+                          <Stack
+                            my={"1em"}
+                            direction={"row"}
+                            alignItems={"center"}
+                          >
                             <Chip
                               variant="filled"
                               label={blog.tags}
                               size="large"
                             />
-                            <Tooltip title={"save"} sx={{ml:"1em"}}>
+                            <Tooltip title={"save"} sx={{ ml: "1em" }}>
                               <IconButton>
                                 <BookmarkAddOutlined />
                               </IconButton>
@@ -183,9 +209,9 @@ const Articles = () => {
                           </Stack>
                         </Box>
 
-                        <Box flex={2} order={{xs:1,sm:2}}>
-                         <img
-                          className='blog-image'
+                        <Box flex={2} order={{ xs: 1, sm: 2 }}>
+                          <img
+                            className="blog-image"
                             style={{ objectFit: "cover" }}
                             src={blog.image}
                             alt={blog.title}

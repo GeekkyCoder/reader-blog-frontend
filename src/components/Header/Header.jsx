@@ -23,6 +23,7 @@ import { SET_USER_LOGOUT } from "../../store/user/user.actions";
 import { TOGGLE_ISMODALOPEN } from "../../store/blogs/blogs.actions";
 import axios from 'axios'
 
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -54,7 +55,8 @@ const Header = () => {
     }
 
     if (redirectPath === "my blogs") {
-      return;
+      navigate('/content/user/blogs')
+      return
     }
 
     navigate(`${redirectPath.toLowerCase()}`);

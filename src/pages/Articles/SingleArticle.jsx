@@ -101,7 +101,7 @@ const SingleArticle = () => {
       if (blogPost) {
         try {
           const { data } = await axios.get(
-            `http://localhost:8000/api/v1/posts/getMoreUserPosts?postId=${blogPost._id}&userId=${blogPost.createdBy}`
+            `/api/v1/posts/getMoreUserPosts?postId=${blogPost._id}&userId=${blogPost.createdBy}`
           );
           setFilteredPosts(data.filteredPosts);
         } catch (err) {
@@ -148,7 +148,7 @@ const SingleArticle = () => {
             >
               <Tooltip title={`${blogPost.name}`}>
                 <Avatar
-                  sx={{ alignSelf: "flex-start" }}
+                  sx={{ alignSelf: "flex-start",width: 56, height: 56 }}
                   src={blogPost?.profileImage}
                   alt={blogPost?.profileImage}
                 ></Avatar>
