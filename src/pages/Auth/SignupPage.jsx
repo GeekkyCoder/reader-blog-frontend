@@ -24,15 +24,6 @@ import {
 } from "@mui/icons-material";
 import { FormContainer, InputField } from "./AuthStyles";
 import { useState } from "react";
-import {
-  FETCH_USER_FAILED,
-  FETCH_USER_START,
-  FETCH_USER_SUCCESS,
-} from "../../store/user/user.actions";
-import {
-  userLoadingSelector,
-} from "../../store/user/userSelector";
-
 
 const defaultFormFields = {
   name: "",
@@ -46,12 +37,12 @@ export const Signup = ({handleShowAuth}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
   const [snackbarMessage,setSnackbarMessage] = useState('')
+  const [error,setError] = useState(false)
+  const [isLoading,setIsLoading] = useState(false)
 
   const { name, email, password, confirmPassword } = formFields;
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const loading = useSelector(userLoadingSelector);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -72,8 +63,7 @@ export const Signup = ({handleShowAuth}) => {
       return;
     }
 
-    dispatch(FETCH_USER_START());
-
+    setIsLoading(true)
     try {
       const { data } = await axios.post(
         "http://localhost:8000/api/v1/auth/register",
@@ -81,7 +71,7 @@ export const Signup = ({handleShowAuth}) => {
           withCredentials:true
         }
       );
-      dispatch(FETCH_USER_SUCCESS(data));
+     
       setFormFields({
         name: "",
         email: "",
@@ -89,14 +79,16 @@ export const Signup = ({handleShowAuth}) => {
         confirmPassword: "",
       });
       setIsSnackBarOpen(true);
-      setSnackbarMessage('successfully registered ✔')
+      setSnackbarMessage(' ✔ Success! Please check your email to verify account')
       setTimeout(() => {
-        navigate('/')
+        handleShowAuth()
         setIsSnackBarOpen(false)
       },3000)
+      setError(false)
+      setIsLoading(false)
     } catch (err) {
-      console.log(err)
-      dispatch(FETCH_USER_FAILED(err));
+      setError(true)
+      setIsLoading(false)
       setSnackbarMessage(err?.response?.data?.msg || "failed to register")
       setIsSnackBarOpen(true);
       setTimeout(() => {
@@ -163,7 +155,6 @@ export const Signup = ({handleShowAuth}) => {
 
       <Box>
         <InputField
-          error={false}
           required
           label="Email"
           placeholder=" Email"
@@ -236,7 +227,7 @@ export const Signup = ({handleShowAuth}) => {
             marginTop: { sm: "2em" },
           }}
           type="submit"
-          loading={loading}
+          loading={isLoading}
           variant="contained"
           color="primary"
           size="large"

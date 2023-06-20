@@ -54,7 +54,6 @@ const Profile = () => {
   const [formFields, setFormFields] = useState({
     name: "",
     bio: "",
-    email: "",
     profileImage: "",
   });
 
@@ -100,7 +99,6 @@ const Profile = () => {
       e.preventDefault();
       const userObj = {
         name: formFields.name,
-        email: formFields.email,
         bio: formFields.bio,
       };
 
@@ -122,7 +120,6 @@ const Profile = () => {
         }, 3000);
         setSnackbarMessage("profile information updated ✔");
       } catch (err) {
-        console.log(err);
         dispatch(FETCH_USER_FAILED(err));
         setIsDrawerClose(true);
         setSnackbarMessage("❌ could not update profile information");
@@ -141,7 +138,6 @@ const Profile = () => {
         ...prevFields,
         name: currentUser?.user?.name,
         bio: currentUser?.user?.bio,
-        email: currentUser?.user?.email,
         profileImage: currentUser?.user.profileImage,
       };
     });
@@ -159,10 +155,7 @@ const Profile = () => {
         setFormFields({ ...formFields, [name]: e.target.files[0] });
         setFileChoosen(true);
         return;
-      } else {
-        setFileChoosen(false);
-      }
-
+      } 
       setFormFields({ ...formFields, [name]: value });
     },
     [currentUser, formFields]
@@ -267,20 +260,6 @@ const Profile = () => {
                       onChange={handleFormFieldChanges}
                     ></TextField>
                   </Box>
-
-                  <Box flex={{ xs: 1, sm: 2 }}>
-                    <TextField
-                      disabled={fieldsDisable}
-                      sx={{
-                        width: { xs: "100%", sm: "70%" },
-                        mt: { xs: "2em", sm: "0" },
-                      }}
-                      variant="standard"
-                      value={formFields.email}
-                      name="email"
-                      onChange={handleFormFieldChanges}
-                    ></TextField>
-                  </Box>
                 </Box>
 
                 <Box
@@ -328,7 +307,7 @@ const Profile = () => {
                       m={"1em 0"}
                     >
                       <TextField
-                        disabled={fieldsDisable || fileChoosen}
+                        disabled={fieldsDisable}
                         type="file"
                         accept="image/*"
                         variant="outlined"

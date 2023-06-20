@@ -69,10 +69,11 @@ const Articles = () => {
       dispatch(FETCH_BLOGS_START());
       try {
         const { data } = await axios.get(`http://localhost:8000/api/v1/posts/allPosts?tags=${tag}&sort=${filter}`);
+        console.log(data)
         dispatch(FETCH_BLOGS_SUCCESS(data.blogs));
       } catch (err) {
         console.log(err)
-        dispatch(FETCH_BLOGS_FAILED(err.response.data.msg));
+        dispatch(FETCH_BLOGS_FAILED(err?.response?.data?.msg));
       }
     };
 

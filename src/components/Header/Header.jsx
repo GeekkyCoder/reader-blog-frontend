@@ -21,7 +21,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { SET_USER_LOGOUT } from "../../store/user/user.actions";
 
 import { TOGGLE_ISMODALOPEN } from "../../store/blogs/blogs.actions";
-import { isModalOpenSelector } from "../../store/blogs/blogs.selector";
 import axios from 'axios'
 
 const Header = () => {
@@ -41,7 +40,9 @@ const Header = () => {
 
     if (redirectPath === "Logout") {
       try {
-        await axios.get("http://localhost:8000/api/v1/auth/logout");
+        await axios.delete("http://localhost:8000/api/v1/auth/logout",{
+          withCredentials:true
+        });
         dispatch(SET_USER_LOGOUT());
         setTimeout(() => {
           navigate("/");
@@ -49,6 +50,7 @@ const Header = () => {
 
         return;
       } catch (err) {
+        console.log(err)
         return;
       }
     }
@@ -69,6 +71,7 @@ const Header = () => {
   };
 
   const handleWriteClick = () => {
+    navigate("/content")
     dispatch(TOGGLE_ISMODALOPEN(true));
   };
 

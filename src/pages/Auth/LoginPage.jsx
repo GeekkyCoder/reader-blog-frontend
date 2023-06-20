@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import { FormContainer, InputField } from "./AuthStyles";
 
 import { Fade, Box, Snackbar, InputAdornment, Typography, Button, Stack } from "@mui/material";
@@ -12,18 +14,22 @@ import {
   VisibilityOff,
   EmailOutlined,
 } from "@mui/icons-material";
+
 import { useDispatch, useSelector } from "react-redux";
+
+
 import {
   userErrorSelector,
   userLoadingSelector,
 } from "../../store/user/userSelector";
+
 import axios from "axios";
 import {
   FETCH_USER_FAILED,
   FETCH_USER_START,
   FETCH_USER_SUCCESS,
 } from "../../store/user/user.actions";
-import { useNavigate } from "react-router-dom";
+
 
 const defaultFormValues = {
   email: "",
@@ -43,8 +49,6 @@ export const LoginPage = ({ handleShowAuth }) => {
 
   const dispatch = useDispatch();
 
-  console.log(formFields)
-
   const handleLoginFormSubmit = async (e) => {
     e.preventDefault();
     const userObj = {
@@ -61,15 +65,13 @@ export const LoginPage = ({ handleShowAuth }) => {
       setSnackbarMessage("logged in successfully ✔");
       setShowSnackbar(true);
       setTimeout(() => {
+        navigate('/')
         setShowSnackbar(false);
       }, 2000);
-      setTimeout(() => {
-        navigate("/")
-      },3000)
     } catch (err) {
       console.log(err)
-      dispatch(FETCH_USER_FAILED(err));
-      setSnackbarMessage('failed to login');
+      dispatch(FETCH_USER_FAILED(err?.response?.data?.msg || 'failed to login'));
+      setSnackbarMessage(err?.response?.data?.msg || 'failed to login');
       setShowSnackbar(true);
       setTimeout(() => {
         setShowSnackbar(false);

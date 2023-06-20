@@ -44,10 +44,17 @@ const sliderSettings = {
   pauseOnHover: true,
   responsive: [
     {
+      breakpoint: 1200,
+      settings: {
+        arrows: false,
+        slidesToShow: 2,
+      },
+    },
+    {
       breakpoint: 768,
       settings: {
         arrows: false,
-        slidesToShow: 3,
+        slidesToShow: 1,
       },
     },
     {
@@ -130,8 +137,8 @@ const SingleArticle = () => {
             <Typography
               variant="h2"
               component={"h3"}
-              fontWeight={{ xs: 600, sm: 800 }}
-              fontSize={{ xs: "2rem", sm: "3rem" }}
+              fontWeight={{ xs: 800, sm: 800 }}
+              fontSize={{ xs: "1.5rem", sm: "3rem" }}
             >
               {blogPost.title}
             </Typography>

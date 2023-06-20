@@ -29,6 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { TOGGLE_ISMODALOPEN } from "../../store/blogs/blogs.actions";
 import { isModalOpenSelector } from "../../store/blogs/blogs.selector";
 
+
 const viewOptions = ["public", "private", "followers"];
 
 const tagsOptions = [
@@ -42,6 +43,8 @@ const tagsOptions = [
 ];
 
 const ArticlesModals = () => {
+
+  
   const BootstrapTooltip = styled(({ className, ...props }) => (
     <Tooltip {...props} arrow classes={{ popper: className }} />
   ))(({ theme }) => ({
@@ -80,12 +83,14 @@ const ArticlesModals = () => {
     setError(false);
 
     const payload = {
-      title:postFields.title,
-      description:postFields.description,
-      image:postFields.image || "https://images.unsplash.com/photo-1542254503-d802f00c2342?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1032&q=80",
-      tags:postFields.tags || "general",
-      view:postFields.view || "public"
-    }
+      title: postFields.title,
+      description: postFields.description,
+      image:
+        postFields.image ||
+        "https://images.unsplash.com/photo-1542254503-d802f00c2342?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1032&q=80",
+      tags: postFields.tags || "general",
+      view: postFields.view || "public",
+    };
 
     try {
       await axios.post(
@@ -104,7 +109,6 @@ const ArticlesModals = () => {
       }, 3000);
       dispatch(TOGGLE_ISMODALOPEN(false));
     } catch (err) {
-      console.log(err);
       setSnackBarMessage("failed to post");
       setError(true);
       setIsSnackBarOpen(true);
@@ -126,7 +130,6 @@ const ArticlesModals = () => {
       setPostFields({ ...postFields, [name]: e.target.files[0] });
       setIsImageUpload(true);
     } else {
-      setIsImageUpload(false)
       setPostFields({ ...postFields, [name]: value });
     }
   };
@@ -231,6 +234,7 @@ const ArticlesModals = () => {
             </Stack>
 
             <Box my={"2em"}>
+           
               <InputField
                 required
                 placeholder="What do you want to talk about?"
@@ -238,13 +242,16 @@ const ArticlesModals = () => {
                 sx={{ width: "100%", fontFamily: "fantasy" }}
                 variant="outlined"
                 size="medium"
-                onChange={hanldePostFieldChanges}
+                onChange={(e) => {
+                  setPostFields({...postFields,title:e.target.value})
+                }}
                 value={postFields.title}
-                name="title"
               ></InputField>
+         
             </Box>
 
             <Box my={"2em"}>
+              <Tooltip title={'description must not be less than 20 characters'} placement="top-start">
               <InputField
                 required
                 label="Description"
@@ -257,6 +264,7 @@ const ArticlesModals = () => {
                 name="description"
                 multiline
               ></InputField>
+              </Tooltip>
             </Box>
 
             <Box>
@@ -284,20 +292,18 @@ const ArticlesModals = () => {
               </BootstrapTooltip>
 
               <Box>
-                <Tooltip title={!isImageUpload ? "choose an image first" : ""}>
-                <LoadingButton
-                  sx={{ marginLeft: "2em" }}
-                  variant="contained"
-                  size="large"
-                  color="success"
-                  onClick={handleBlogImageUpload}
-                  loading={isLoading}
-                  disabled={!isImageUpload}
-                  startIcon={<Save />}
-                >
-                  Upload
-                </LoadingButton>
-                </Tooltip>
+                  <LoadingButton
+                    sx={{ marginLeft: "2em" }}
+                    variant="contained"
+                    size="large"
+                    color="success"
+                    onClick={handleBlogImageUpload}
+                    loading={isLoading}
+                    disabled={!isImageUpload}
+                    startIcon={<Save />}
+                  >
+                    Upload
+                  </LoadingButton>
               </Box>
             </Box>
             <Divider />
