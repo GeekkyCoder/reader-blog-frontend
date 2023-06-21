@@ -30,7 +30,6 @@ import {
 import UserPostModal from "./UserPostModal";
 
 const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
-  const [currentUserPost,setCurrentUserPost] = useState({})
   const [isEditButtonHovered, setIsEditButtonHovered] = useState(false);
   const [isDeleteButtonHoverd, setIsDeleteButtonHovered] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -98,7 +97,7 @@ const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
   const UserPostsJsx = useMemo(() => {
     return (
       <Box>
-        {isEditModalOpen && <UserPostModal isEditModalOpen={isEditModalOpen} handleCancelClick={handleCancelClick} postId={userPost._id} setCurrentUserPost={setCurrentUserPost} setIsEditModalOpen={setIsEditModalOpen} />}
+        {isEditModalOpen && <UserPostModal isEditModalOpen={isEditModalOpen} handleCancelClick={handleCancelClick} postId={userPost._id}  setIsEditModalOpen={setIsEditModalOpen} />}
         <Stack
           key={userPost._id}
           direction={"column"}
@@ -244,7 +243,7 @@ const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
         </Stack>
       </Box>
     );
-  }, [userPost, isEditButtonHovered, isDeleteButtonHoverd, showMore,isEditModalOpen,currentUserPost]);
+  }, [userPost, isEditButtonHovered, isDeleteButtonHoverd, showMore,isEditModalOpen]);
 
   return (
     <Container>

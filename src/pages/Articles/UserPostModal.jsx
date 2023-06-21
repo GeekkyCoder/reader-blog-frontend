@@ -24,8 +24,6 @@ const UserPostModal = ({
   isEditModalOpen,
   setIsEditModalOpen,
   handleCancelClick,
-  setCurrentUserPost,
-  currentUserPost,
 }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -50,7 +48,6 @@ const UserPostModal = ({
         postObj,
       );
       setIsSnackBarOpen(true);
-      setCurrentUserPost((prevUserPost) => data.post);
       setSnackBarMessage("post updated successfully ✔");
       setIsLoading(false);
       setError(false);
