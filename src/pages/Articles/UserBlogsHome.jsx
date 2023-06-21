@@ -27,13 +27,16 @@ import {
   ExpandCircleDownOutlined,
   RemoveCircleOutline,
 } from "@mui/icons-material";
+
 import UserPostModal from "./UserPostModal";
+
+import axios from "axios";
 
 const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
   const [isEditButtonHovered, setIsEditButtonHovered] = useState(false);
   const [isDeleteButtonHoverd, setIsDeleteButtonHovered] = useState(false);
   const [showMore, setShowMore] = useState(false);
-  const [isEditModalOpen,setIsEditModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleMouseEnterInEditButton = () => {
     setIsEditButtonHovered(true);
@@ -86,18 +89,40 @@ const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
   }`;
 
   const handleEditClick = () => {
-    setIsEditModalOpen(true)
-  }
+    setIsEditModalOpen(true);
+  };
 
   const handleCancelClick = () => {
     setIsEditModalOpen(false);
   };
 
+  const handleDeleteClick = async (postId) => {
+    const shouldDelete = window.confirm(
+      "are you are you want to delete your post ?"
+    );
+    if (shouldDelete) {
+      try {
+        await axios.delete(`/api/v1/posts/deletePost?post=${postId}`);
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
 
   const UserPostsJsx = useMemo(() => {
     return (
       <Box>
-        {isEditModalOpen && <UserPostModal isEditModalOpen={isEditModalOpen} handleCancelClick={handleCancelClick} postId={userPost._id}  setIsEditModalOpen={setIsEditModalOpen} />}
+        {isEditModalOpen && (
+          <UserPostModal
+            isEditModalOpen={isEditModalOpen}
+            handleCancelClick={handleCancelClick}
+            postId={userPost._id}
+            setIsEditModalOpen={setIsEditModalOpen}
+          />
+        )}
         <Stack
           key={userPost._id}
           direction={"column"}
@@ -184,6 +209,7 @@ const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
                     endIcon={deleteIcon()}
                     onMouseEnter={handleMouseEnterDeleteButton}
                     onMouseLeave={handleMouseLeaveDeleteButton}
+                    onClick={() => handleDeleteClick(userPost._id)}
                   >
                     Delete
                   </Button>
@@ -243,7 +269,13 @@ const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
         </Stack>
       </Box>
     );
-  }, [userPost, isEditButtonHovered, isDeleteButtonHoverd, showMore,isEditModalOpen]);
+  }, [
+    userPost,
+    isEditButtonHovered,
+    isDeleteButtonHoverd,
+    showMore,
+    isEditModalOpen,
+  ]);
 
   return (
     <Container>
