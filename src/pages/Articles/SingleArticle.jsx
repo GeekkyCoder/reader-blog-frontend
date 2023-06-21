@@ -28,9 +28,11 @@ import { formatDate } from "../../utils/convertToDate";
 import {
   BookmarkAddOutlined,
   TextsmsOutlined,
+  ThumbUp,
   ThumbUpOutlined,
 } from "@mui/icons-material";
 import Skeleton from "../../components/Skeleton/Skeleton";
+import CommentModal from "./CommentModal";
 
 const sliderSettings = {
   infinite: true,
@@ -70,16 +72,17 @@ const sliderSettings = {
 const SingleArticle = () => {
   const [blogPost, setBlogPost] = useState({});
   const [filteredPosts, setFilteredPosts] = useState([]);
+  const [updatedPost, setUpdatedPost] = useState({});
   const [error, setError] = useState(false);
   const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
+  const [isLikeClicked, setIsLikeClicked] = useState(false);
+  const [isCommentModalOpen,setIsCommentModalOpen] = useState(false)
   const { blogId } = useParams();
 
   useEffect(() => {
     const fetchSingleBlogPost = async () => {
       try {
-        const { data } = await axios.get(
-          `/api/v1/posts/blogs?post=${blogId}`
-        );
+        const { data } = await axios.get(`/api/v1/posts/blogs?post=${blogId}`);
         setBlogPost(data.post);
         setIsSnackBarOpen(true);
         setTimeout(() => {
@@ -94,7 +97,31 @@ const SingleArticle = () => {
       }
     };
     fetchSingleBlogPost();
-  }, []);
+  }, [updatedPost]);
+
+  const handlePostlikeClick = async () => {
+    setIsLikeClicked(true);
+    try {
+      const { data } = await axios.patch(
+        `/api/v1/posts/likepost?post=${blogId}`
+      );
+      setUpdatedPost(data?.post);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleUnlikePostClick = async () => {
+    setIsLikeClicked(false);
+    try {
+      const { data } = await axios.patch(
+        `/api/v1/posts/unlikepost?post=${blogId}`
+      );
+      setUpdatedPost(data?.post);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
     const getRestOfBlogPostsOfThisUser = async () => {
@@ -105,15 +132,21 @@ const SingleArticle = () => {
           );
           setFilteredPosts(data.filteredPosts);
         } catch (err) {
-          console.log(err)
+          console.log(err);
         }
       }
     };
 
     getRestOfBlogPostsOfThisUser();
-  }, [blogPost]);
+  }, [updatedPost]);
+
+  const handleCommentDrawer = (blogPostId) => {
+    setIsCommentModalOpen(true)  
+  }
 
   return (
+    <Box>
+     <CommentModal blogId={blogPost._id} comments={blogPost?.comments || []} isCommentModalOpen={isCommentModalOpen} setIsCommentModalOpen={setIsCommentModalOpen} />
     <Container>
       {error && (
         <Snackbar
@@ -148,13 +181,13 @@ const SingleArticle = () => {
             >
               <Tooltip title={`${blogPost.name}`}>
                 <Avatar
-                  sx={{ alignSelf: "flex-start",width: 56, height: 56 }}
+                  sx={{ alignSelf: "flex-start", width: 56, height: 56 }}
                   src={blogPost?.profileImage}
                   alt={blogPost?.profileImage}
                 ></Avatar>
               </Tooltip>
 
-              <Box ml={".5em"} mb={{xs:"1em",sm:"0em"}}>
+              <Box ml={".5em"} mb={{ xs: "1em", sm: "0em" }}>
                 <Typography component={"p"} variant="p">
                   {blogPost?.name}
                 </Typography>
@@ -200,7 +233,13 @@ const SingleArticle = () => {
               <Stack direction={"row"}>
                 <Tooltip title={"like this blog post"}>
                   <Button
-                    startIcon={<ThumbUpOutlined />}
+                    startIcon={
+                      !isLikeClicked ? (
+                        <ThumbUpOutlined onClick={handlePostlikeClick} />
+                      ) : (
+                        <ThumbUp onClick={handleUnlikePostClick} />
+                      )
+                    }
                     variant="text"
                     color="inherit"
                   >
@@ -210,6 +249,7 @@ const SingleArticle = () => {
                 <Tooltip title={"comments"}>
                   <Button
                     startIcon={<TextsmsOutlined />}
+                    onClick={() => handleCommentDrawer(blogPost._id)}
                     variant="text"
                     color="inherit"
                   >
@@ -345,7 +385,7 @@ const SingleArticle = () => {
                               >
                                 {post.description.slice(0, 150)}...
                               </Typography>
-                              <Chip variant="filled" label={post.tags}/>
+                              <Chip variant="filled" label={post.tags} />
                             </CardContent>
                           </Card>
                         );
@@ -363,6 +403,7 @@ const SingleArticle = () => {
         </Box>
       )}
     </Container>
+    </Box>
   );
 };
 
