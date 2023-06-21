@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Global } from "@emotion/react";
 import { styled } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -30,16 +30,12 @@ const Root = styled("div")(({ theme }) => ({
       : theme.palette.background.default,
 }));
 
-function CommentModal({
-  isCommentModalOpen,
-  setIsCommentModalOpen,
-  comments,
-  blogId,
-}) {
+function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
+  const [comments, setComments] = useState([]);
   //   console.log(comments);
 
   const handleCommentFieldChange = (e) => {
@@ -66,6 +62,7 @@ function CommentModal({
       });
       setError(false);
     } catch (err) {
+      console.log(err)
       setIsSnackBarOpen(true);
       setError(false);
       setIsLoading(false);
@@ -74,6 +71,21 @@ function CommentModal({
       });
     }
   };
+
+  useEffect(() => {
+    const fecthCommentsForThisPost = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:8000/api/v1/comments/allComments?post=${blogId}`
+        );
+        setComments(data?.comments[0].comments);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fecthCommentsForThisPost();
+  }, []);
 
   return (
     <Box>

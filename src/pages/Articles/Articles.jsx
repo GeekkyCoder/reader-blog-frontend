@@ -40,6 +40,7 @@ import { BookmarkAddOutlined } from "@mui/icons-material";
 
 import { Route, Routes, useNavigate } from "react-router-dom";
 import UserBlogsHome from "./UserBlogsHome";
+import { formatDate } from "../../utils/convertToDate";
 
 const tagsOptions = [
   "technology",
@@ -175,6 +176,7 @@ const Articles = () => {
                         alignItems={{ xs: "start", sm: "center" }}
                         display={"flex"}
                       >
+
                         <Box flex={5} order={{ xs: 2, sm: 1 }}>
                           <Typography
                             component={"h2"}
@@ -191,21 +193,27 @@ const Articles = () => {
                           >
                             {blog.description}
                           </Typography>
+
                           <Stack
                             my={"1em"}
                             direction={"row"}
                             alignItems={"center"}
+                            display={'flex'}
+                            justifyContent={'space-between'}
                           >
                             <Chip
                               variant="filled"
                               label={blog.tags}
                               size="large"
                             />
-                            <Tooltip title={"save"} sx={{ ml: "1em" }}>
+                            <Box display={'flex'} alignItems={'center'}>
+                              <Typography color={'GrayText'} fontSize={'15px'} >{formatDate(blog.createdAt)}</Typography>
+                            <Tooltip title={"save"} sx={{ ml: "1em",mr:"1em" }}>
                               <IconButton>
                                 <BookmarkAddOutlined />
                               </IconButton>
                             </Tooltip>
+                            </Box>
                           </Stack>
                         </Box>
 

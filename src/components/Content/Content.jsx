@@ -1,7 +1,5 @@
 import { Box, Skeleton, Stack } from "@mui/material";
 import Articles from "../../pages/Articles/Articles";
-import { Route, Routes } from "react-router-dom";
-import UserBlogsHome from "../../pages/Articles/UserBlogsHome";
 
 const Content = () => {
   return (

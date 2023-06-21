@@ -18,13 +18,14 @@ const VerifyPage = () => {
     const verifyToken = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.post('http://localhost:8000/api/v1/auth/verify-email', {
+        const { data } = await axios.post('/api/v1/auth/verify-email', {
           verificationToken: query.get('token'),
           email: query.get('email'),
         },{
           withCredentials:true
         });
         setLoading(false)
+        setError(false)
       } catch (error) {
         console.log(error)
         // console.log(error.response);
@@ -34,14 +35,12 @@ const VerifyPage = () => {
     };
   
     useEffect(() => {
-      if(!loading){
         verifyToken();
-      }
     }, []);
   
     if (loading) {
       return (
-        <div className='page'>
+        <div >
           <h2>Loading...</h2>
         </div>
       );
@@ -49,7 +48,7 @@ const VerifyPage = () => {
   
     if (error) {
       return (
-        <div className='page'>
+        <div>
           <h4>There was an error, please double check your verification link </h4>
         </div>
       );

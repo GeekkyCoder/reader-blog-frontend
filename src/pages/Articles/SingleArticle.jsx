@@ -83,7 +83,7 @@ const SingleArticle = () => {
     const fetchSingleBlogPost = async () => {
       try {
         const { data } = await axios.get(`/api/v1/posts/blogs?post=${blogId}`);
-        setBlogPost(data.post);
+        setBlogPost(data?.post);
         setIsSnackBarOpen(true);
         setTimeout(() => {
           setIsSnackBarOpen(false);
@@ -124,29 +124,29 @@ const SingleArticle = () => {
   };
 
   useEffect(() => {
+    if (blogPost) {
     const getRestOfBlogPostsOfThisUser = async () => {
-      if (blogPost) {
         try {
           const { data } = await axios.get(
-            `/api/v1/posts/getMoreUserPosts?postId=${blogPost._id}&userId=${blogPost.createdBy}`
+            `/api/v1/posts/getMoreUserPosts?postId=${blogId}&userId=${blogPost?.createdBy}`
           );
           setFilteredPosts(data.filteredPosts);
         } catch (err) {
           console.log(err);
         }
-      }
     };
 
     getRestOfBlogPostsOfThisUser();
-  }, [updatedPost]);
+    }
+  }, [blogPost]);
 
-  const handleCommentDrawer = (blogPostId) => {
+  const handleCommentDrawer = () => {
     setIsCommentModalOpen(true)  
   }
 
   return (
     <Box>
-     <CommentModal blogId={blogPost._id} comments={blogPost?.comments || []} isCommentModalOpen={isCommentModalOpen} setIsCommentModalOpen={setIsCommentModalOpen} />
+   {Object.keys(blogPost).length > 0 && <CommentModal blogId={blogPost?._id}  isCommentModalOpen={isCommentModalOpen} setIsCommentModalOpen={setIsCommentModalOpen} />}
     <Container>
       {error && (
         <Snackbar
