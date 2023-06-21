@@ -182,7 +182,6 @@ const ArticlesModals = () => {
         //   TransitionComponent={Transition}
         keepMounted
         //   onClose={}
-        aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>{"Create A Blog"}</DialogTitle>
         <Divider />

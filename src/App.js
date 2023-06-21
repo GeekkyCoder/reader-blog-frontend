@@ -23,7 +23,7 @@ const Profile = lazy(() => import("./pages/profile/Profile.jsx"));
 const Content = lazy(() => import("./components/Content/Content.jsx"));
 const Auth = lazy(() => import("./pages/Auth/Auth.jsx"));
 const SingleArticle = lazy(() => import("./pages/Articles/SingleArticle.jsx"));
-const UserBlogsHome = lazy(() => import("./pages/Articles/UserBlogsHome.jsx"));
+const UserPost = lazy(() => import("./pages/Articles/UserPost.jsx"));
 const VerifyEmail = lazy(() => import("./pages/Auth/VerifyEmail.jsx"));
 
 function App() {
@@ -58,7 +58,7 @@ function App() {
           <Route path="/content">
             <Route index element={<Content />}></Route>
             <Route path="blog/:blogId" element={<SingleArticle />}></Route>
-            <Route path="user/blogs" element={<UserBlogsHome />}></Route>
+            <Route path="user/blogs" element={<UserPost />}></Route>
           </Route>
         </Routes>
       </Box>
