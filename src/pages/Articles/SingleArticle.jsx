@@ -26,19 +26,19 @@ import "./article.css";
 
 import axios from "axios";
 
-import {
-  SET_IS_LOADING,
-  SET_IS_SNACKBAR_OPEN,
-  SET_ERROR,
-  SET_SNACK_BAR_MESSAGE,
-} from "../../store/actions/actions.actions";
+// import {
+//   SET_IS_LOADING,
+//   SET_IS_SNACKBAR_OPEN,
+//   SET_ERROR,
+//   SET_SNACK_BAR_MESSAGE,
+// } from "../../store/actions/actions.actions";
 
-import {
-  errorActionSelector,
-  isSnackBarOpenActionSelector,
-  loadingActionSelector,
-  snackbarMessageActionSelector,
-} from "../../store/actions/actionSelector";
+// import {
+//   errorActionSelector,
+//   isSnackBarOpenActionSelector,
+//   loadingActionSelector,
+//   snackbarMessageActionSelector,
+// } from "../../store/actions/actionSelector";
 
 import { formatDate } from "../../utils/convertToDate";
 
@@ -96,17 +96,10 @@ const SingleArticle = () => {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const { blogId } = useParams();
 
-  const dispatch = useDispatch();
-
-  const actionIsLoading = useSelector(loadingActionSelector);
-  const actionSnackBarMessage = useSelector(snackbarMessageActionSelector);
-  const actionIsSnackBarOpen = useSelector(isSnackBarOpenActionSelector);
-  const actionErrorSelector = useSelector(errorActionSelector);
-
   useEffect(() => {
     const fetchSingleBlogPost = async () => {
       try {
-        const { data } = await axios.get(`/api/v1/posts/blogs?post=${blogId}`);
+        const { data } = await axios.get(`https://reader-blogging-web.onrender.com/api/v1/posts/blogs?post=${blogId}`);
         setBlogPost(data?.post);
         setIsSnackBarOpen(true);
         setTimeout(() => {
@@ -127,7 +120,7 @@ const SingleArticle = () => {
     setIsLikeClicked(true);
     try {
       const { data } = await axios.patch(
-        `/api/v1/posts/likepost?post=${blogId}`
+        `https://reader-blogging-web.onrender.com/api/v1/posts/likepost?post=${blogId}`
       );
       setUpdatedPost(data?.post);
     } catch (err) {
@@ -139,7 +132,7 @@ const SingleArticle = () => {
     setIsLikeClicked(false);
     try {
       const { data } = await axios.patch(
-        `/api/v1/posts/unlikepost?post=${blogId}`
+        `https://reader-blogging-web.onrender.com/api/v1/posts/unlikepost?post=${blogId}`
       );
       setUpdatedPost(data?.post);
     } catch (err) {
@@ -152,7 +145,7 @@ const SingleArticle = () => {
       const getRestOfBlogPostsOfThisUser = async () => {
         try {
           const { data } = await axios.get(
-            `/api/v1/posts/getMoreUserPosts?postId=${blogId}&userId=${blogPost?.createdBy}`
+            `https://reader-blogging-web.onrender.com/api/v1/posts/getMoreUserPosts?postId=${blogId}&userId=${blogPost?.createdBy}`
           );
           setFilteredPosts(data.filteredPosts);
         } catch (err) {

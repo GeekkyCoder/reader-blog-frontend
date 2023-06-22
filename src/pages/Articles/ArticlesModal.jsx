@@ -96,7 +96,7 @@ const ArticlesModals = () => {
 
     dispatch(SET_IS_LOADING());
     try {
-      await axios.post("/api/v1/posts/createPost", payload);
+      await axios.post("https://reader-blogging-web.onrender.com/api/v1/posts/createPost", payload);
       dispatch(SET_SNACK_BAR_MESSAGE("posted"));
       setIsImageUpload(false);
       dispatch(SET_IS_SNACKBAR_OPEN(true));

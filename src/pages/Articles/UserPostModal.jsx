@@ -44,7 +44,7 @@ const UserPostModal = ({
     try {
       setIsLoading(true);
       const { data } = await axios.patch(
-        `/api/v1/posts/updatePost?postId=${postId}`,
+        `https://reader-blogging-web.onrender.com/api/v1/posts/updatePost?postId=${postId}`,
         postObj,
       );
       setIsSnackBarOpen(true);
