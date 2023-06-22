@@ -58,7 +58,7 @@ export const LoginPage = ({ handleShowAuth }) => {
 
     dispatch(FETCH_USER_START());
     try {
-      const {data} = await axios.post('/api/v1/auth/login',userObj)
+      const {data} = await axios.post('https://reader-blogging-web.onrender.com/api/v1/auth/login',userObj)
       dispatch(FETCH_USER_SUCCESS(data));
       setSnackbarMessage("logged in successfully ✔");
       setShowSnackbar(true);
