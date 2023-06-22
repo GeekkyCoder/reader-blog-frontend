@@ -28,7 +28,20 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { TOGGLE_ISMODALOPEN } from "../../store/blogs/blogs.actions";
 import { isModalOpenSelector } from "../../store/blogs/blogs.selector";
+import {
+  SET_IS_LOADING,
+  SET_IS_SNACKBAR_OPEN,
+  SET_ERROR,
+  SET_SNACK_BAR_MESSAGE,
+} from "../../store/actions/actions.actions";
 
+import {
+  actionSelector,
+  errorActionSelector,
+  isSnackBarOpenActionSelector,
+  loadingActionSelector,
+  snackbarMessageActionSelector,
+} from "../../store/actions/actionSelector";
 
 const viewOptions = ["public", "private", "followers"];
 
@@ -43,28 +56,7 @@ const tagsOptions = [
 ];
 
 const ArticlesModals = () => {
-
-  
-  const BootstrapTooltip = styled(({ className, ...props }) => (
-    <Tooltip {...props} arrow classes={{ popper: className }} />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.arrow}`]: {
-      color: theme.palette.common.black,
-    },
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: theme.palette.common.black,
-    },
-  }));
-
-  const dispatch = useDispatch();
-
-  const isModalOpen = useSelector(isModalOpenSelector);
-
-  const [snackBarMessage, setSnackBarMessage] = useState("");
-  const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
   const [isImageUpload, setIsImageUpload] = useState(false);
-  const [isLoading, setIsloading] = useState(false);
-  const [error, setError] = useState(false);
 
   const [postFields, setPostFields] = useState({
     title: "",
@@ -74,13 +66,23 @@ const ArticlesModals = () => {
     view: "",
   });
 
+  const dispatch = useDispatch();
+
+  const isModalOpen = useSelector(isModalOpenSelector);
+
+  const actionIsLoading = useSelector(loadingActionSelector);
+  const actionSnackBarMessage = useSelector(snackbarMessageActionSelector);
+  const actionIsSnackBarOpen = useSelector(isSnackBarOpenActionSelector);
+  const actionErrorSelector = useSelector(errorActionSelector);
+  const action = useSelector(actionSelector);
+
+  console.log(action.isSnackBarOpen);
+  console.log(action.snackBarMessage);
+
   const handlPostSubmit = async (e) => {
     e.preventDefault();
 
     if (!postFields.title || !postFields.description) return;
-
-    setIsloading(true);
-    setError(false);
 
     const payload = {
       title: postFields.title,
@@ -92,26 +94,22 @@ const ArticlesModals = () => {
       view: postFields.view || "public",
     };
 
+    dispatch(SET_IS_LOADING());
     try {
-      await axios.post(
-        "/api/v1/posts/createPost",
-        payload
-      );
-      setSnackBarMessage("posted");
-      setIsloading(false);
+      await axios.post("/api/v1/posts/createPost", payload);
+      dispatch(SET_SNACK_BAR_MESSAGE("posted"));
       setIsImageUpload(false);
-      setIsSnackBarOpen(true);
+      dispatch(SET_IS_SNACKBAR_OPEN(true));
       setTimeout(() => {
-        setIsSnackBarOpen(false);
+        dispatch(SET_IS_SNACKBAR_OPEN(false));
       }, 3000);
       dispatch(TOGGLE_ISMODALOPEN(false));
     } catch (err) {
-      setSnackBarMessage("failed to post");
-      setError(true);
-      setIsSnackBarOpen(true);
-      setIsloading(false);
+      dispatch(SET_IS_SNACKBAR_OPEN(true));
+      dispatch(SET_SNACK_BAR_MESSAGE("failed to post"));
+      dispatch(SET_ERROR(err?.response?.data?.msg || "failed to post"));
       setTimeout(() => {
-        setIsSnackBarOpen(false);
+        dispatch(SET_IS_SNACKBAR_OPEN(false));
       }, 3000);
     }
   };
@@ -137,28 +135,26 @@ const ArticlesModals = () => {
     const formData = new FormData();
     formData.append("file", imageFile);
     formData.append("upload_preset", "lfueeeon");
-    setIsloading(true);
-    setError(false);
+    dispatch(SET_IS_LOADING());
     try {
       const { data } = await axios.post(
         `https://api.cloudinary.com/v1_1/dczhcauwf/image/upload`,
         formData
       );
       setPostFields({ ...postFields, image: data.secure_url });
-      setIsSnackBarOpen(true);
-      setIsloading(false);
-      setSnackBarMessage("image uploaded successfully!");
+      dispatch(SET_IS_SNACKBAR_OPEN(true));
+      dispatch(SET_SNACK_BAR_MESSAGE("image uploaded successfully!"));
       setTimeout(() => {
-        setIsSnackBarOpen(false);
+        dispatch(SET_IS_SNACKBAR_OPEN(false));
       }, 3000);
     } catch (err) {
-      console.log(err);
-      setError(true);
-      setIsSnackBarOpen(true);
-      setIsloading(false);
-      setSnackBarMessage("image upload failed!");
+      dispatch(
+        SET_ERROR(err?.response?.data?.msg || "failed to upload image!")
+      );
+      dispatch(SET_IS_SNACKBAR_OPEN(true));
+      dispatch(SET_SNACK_BAR_MESSAGE("failed tp upload image"));
       setTimeout(() => {
-        setIsSnackBarOpen(false);
+        dispatch(SET_IS_SNACKBAR_OPEN(false));
       }, 3000);
     }
   };
@@ -166,12 +162,15 @@ const ArticlesModals = () => {
   return (
     <>
       <Snackbar
-        message={snackBarMessage}
-        open={isSnackBarOpen}
+        message={actionSnackBarMessage}
+        open={actionIsSnackBarOpen}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert variant="filled" severity={error ? "error" : "success"}>
-          {snackBarMessage}
+        <Alert
+          variant="filled"
+          severity={actionErrorSelector ? "error" : "success"}
+        >
+          {actionSnackBarMessage}
         </Alert>
       </Snackbar>
       <Dialog
@@ -230,7 +229,6 @@ const ArticlesModals = () => {
             </Stack>
 
             <Box my={"2em"}>
-           
               <InputField
                 required
                 placeholder="What do you want to talk about?"
@@ -239,27 +237,29 @@ const ArticlesModals = () => {
                 variant="outlined"
                 size="medium"
                 onChange={(e) => {
-                  setPostFields({...postFields,title:e.target.value})
+                  setPostFields({ ...postFields, title: e.target.value });
                 }}
                 value={postFields.title}
               ></InputField>
-         
             </Box>
 
             <Box my={"2em"}>
-              <Tooltip title={'description must not be less than 20 characters'} placement="top-start">
-              <InputField
-                required
-                label="Description"
-                placeholder="What's on your mind"
-                sx={{ width: "100%" }}
-                variant="outlined"
-                size="medium"
-                onChange={hanldePostFieldChanges}
-                value={postFields.description}
-                name="description"
-                multiline
-              ></InputField>
+              <Tooltip
+                title={"description must not be less than 20 characters"}
+                placement="top-start"
+              >
+                <InputField
+                  required
+                  label="Description"
+                  placeholder="What's on your mind"
+                  sx={{ width: "100%" }}
+                  variant="outlined"
+                  size="medium"
+                  onChange={hanldePostFieldChanges}
+                  value={postFields.description}
+                  name="description"
+                  multiline
+                ></InputField>
               </Tooltip>
             </Box>
 
@@ -270,11 +270,9 @@ const ArticlesModals = () => {
             </Box>
 
             <Box my={"2em"} sx={{ display: "flex", alignItems: "center" }}>
-              <BootstrapTooltip
+              <Tooltip
                 placement="top-start"
-                title={
-                  "we will add a dummy/blurry image,incase if you dont want to upload an image!!!"
-                }
+                title={"for better resolutions use a landscape image "}
               >
                 <Box>
                   <InputField
@@ -285,21 +283,21 @@ const ArticlesModals = () => {
                     name="image"
                   ></InputField>
                 </Box>
-              </BootstrapTooltip>
+              </Tooltip>
 
               <Box>
-                  <LoadingButton
-                    sx={{ marginLeft: "2em" }}
-                    variant="contained"
-                    size="large"
-                    color="success"
-                    onClick={handleBlogImageUpload}
-                    loading={isLoading}
-                    disabled={!isImageUpload}
-                    startIcon={<Save />}
-                  >
-                    Upload
-                  </LoadingButton>
+                <LoadingButton
+                  sx={{ marginLeft: "2em" }}
+                  variant="contained"
+                  size="large"
+                  color="success"
+                  onClick={handleBlogImageUpload}
+                  loading={actionIsLoading}
+                  disabled={!isImageUpload}
+                  startIcon={<Save />}
+                >
+                  Upload
+                </LoadingButton>
               </Box>
             </Box>
             <Divider />
@@ -317,7 +315,7 @@ const ArticlesModals = () => {
                 </Button>
                 <LoadingButton
                   type="submit"
-                  loading={isLoading}
+                  loading={actionIsLoading}
                   variant="text"
                   color="success"
                   size="medium"
@@ -330,10 +328,6 @@ const ArticlesModals = () => {
             </DialogActions>
           </FormContainer>
         </DialogContent>
-        {/* <DialogActions>
-        <Button onClick={handleClose}>Disagree</Button>
-        <Button onClick={handleClose}>Agree</Button>
-      </DialogActions> */}
       </Dialog>
     </>
   );

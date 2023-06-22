@@ -38,8 +38,7 @@ import Skeleton from "../../components/Skeleton/Skeleton";
 import { ArticleContainer, FormContainer } from "./ArticlesModalStyles";
 import { BookmarkAddOutlined } from "@mui/icons-material";
 
-import { Route, Routes, useNavigate } from "react-router-dom";
-import UserBlogsHome from "./UserBlogsHome";
+import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../utils/convertToDate";
 
 const tagsOptions = [

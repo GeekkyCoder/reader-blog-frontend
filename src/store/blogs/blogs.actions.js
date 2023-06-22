@@ -1,4 +1,3 @@
-const { KeyboardReturnRounded } = require("@mui/icons-material");
 const BLOG_ACTION_TYPES = require("./blogs.actionTypes");
 
 const FETCH_BLOGS_START = () => {

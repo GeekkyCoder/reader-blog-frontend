@@ -4,6 +4,9 @@ import { styled } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { grey } from "@mui/material/colors";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+
+import Comments from "./Comments";
+
 import {
   Container,
   Stack,
@@ -14,11 +17,26 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { CloseOutlined, Send } from "@mui/icons-material";
-import Comments from "./Comments";
 
 import axios from "axios";
-import { LoadingButton } from "@mui/lab";
+import { useSelector,useDispatch } from "react-redux";
+
+import {
+  SET_IS_LOADING,
+  SET_IS_SNACKBAR_OPEN,
+  SET_ERROR,
+  SET_SNACK_BAR_MESSAGE,
+} from "../../store/actions/actions.actions";
+
+import {
+  errorActionSelector,
+  isSnackBarOpenActionSelector,
+  loadingActionSelector,
+  snackbarMessageActionSelector,
+} from "../../store/actions/actionSelector";
+
 
 const drawerBleeding = 56;
 
@@ -32,11 +50,15 @@ const Root = styled("div")(({ theme }) => ({
 
 function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
   const [content, setContent] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
   const [comments, setComments] = useState([]);
-  //   console.log(comments);
+
+
+  const dispatch = useDispatch()
+  
+  const actionIsLoading = useSelector(loadingActionSelector);
+  const actionSnackBarMessage = useSelector(snackbarMessageActionSelector);
+  const actionIsSnackBarOpen = useSelector(isSnackBarOpenActionSelector);
+  const actionErrorSelector = useSelector(errorActionSelector);
 
   const handleCommentFieldChange = (e) => {
     setContent(e.target.value);
@@ -50,37 +72,46 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
     };
 
     try {
-      setIsLoading(true);
+      dispatch(SET_IS_LOADING())
       const { data } = await axios.post(
         `/api/v1/comments/createComment?postId=${blogId} `,
         commentObj
       );
-      setIsLoading(false);
-      setIsSnackBarOpen(true);
+      dispatch(SET_SNACK_BAR_MESSAGE("comment posted"))
+      dispatch(SET_IS_SNACKBAR_OPEN(true))
       setTimeout(() => {
-        setIsSnackBarOpen(false);
-      });
-      setError(false);
+        dispatch(SET_IS_SNACKBAR_OPEN(false))
+      },5000);
     } catch (err) {
-      console.log(err)
-      setIsSnackBarOpen(true);
-      setError(false);
-      setIsLoading(false);
+      dispatch(SET_ERROR(err?.response?.data?.msg || "failed to comment"))
+      dispatch(SET_IS_SNACKBAR_OPEN(true))
+      dispatch(SET_SNACK_BAR_MESSAGE(err?.response?.data?.msg || "failed to comment"))
       setTimeout(() => {
-        setIsSnackBarOpen(false);
-      });
+        dispatch(SET_IS_SNACKBAR_OPEN(false))
+      },5000);
     }
   };
 
   useEffect(() => {
     const fecthCommentsForThisPost = async () => {
+      dispatch(SET_IS_LOADING())
       try {
         const { data } = await axios.get(
-          `http://localhost:8000/api/v1/comments/allComments?post=${blogId}`
+          `/api/v1/comments/allComments?post=${blogId}`
         );
         setComments(data?.comments[0].comments);
+        dispatch(SET_IS_SNACKBAR_OPEN(true))
+        // dispatch(SET_SNACK_BAR_MESSAGE("✔"))
+        setTimeout(() => {
+          dispatch(SET_IS_SNACKBAR_OPEN(false))
+        },5000)
       } catch (err) {
-        console.log(err);
+        dispatch(SET_ERROR(true))
+        dispatch(SET_IS_SNACKBAR_OPEN(true))
+        // dispatch(SET_SNACK_BAR_MESSAGE(err?.response?.data?.msg || "failed to fetch comments for this post"))
+        setTimeout(() => {
+          dispatch(SET_IS_SNACKBAR_OPEN(false))
+        },5000)
       }
     };
 
@@ -90,11 +121,11 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
   return (
     <Box>
       <Snackbar
-        open={isSnackBarOpen}
-        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+        open={actionIsSnackBarOpen}
+        anchorOrigin={{ horizontal: "center", vertical: "top" }}
       >
-        <Alert severity={error ? "error" : "success"}>
-          {error ? "❌" : "✔"}
+        <Alert severity={actionErrorSelector ? "error" : "success"}>
+          {actionErrorSelector}
         </Alert>
       </Snackbar>
       <Root>
@@ -109,7 +140,6 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
         />
 
         <SwipeableDrawer
-          // container={container}
           anchor="bottom"
           open={isCommentModalOpen}
           swipeAreaWidth={drawerBleeding}
@@ -135,7 +165,7 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
               </Typography>
               <Button
                 onClick={() => setIsCommentModalOpen(false)}
-                variant="text"
+                variant="contained"
                 color="inherit"
                 startIcon={<CloseOutlined fontSize="large" />}
               ></Button>
@@ -151,9 +181,9 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
                   onChange={handleCommentFieldChange}
                   name="content"
                 ></TextField>
-                <Box>
+                <Box my={'1em'}>
                   <LoadingButton
-                    loading={isLoading}
+                    loading={actionIsLoading}
                     type={"submit"}
                     variant="text"
                     color="inherit"
@@ -180,15 +210,11 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
               )}
             </Stack>
           </Container>
-          {/*Content*/}
         </SwipeableDrawer>
       </Root>
     </Box>
   );
 }
 
-// CommentModal.propTypes = {
-//   window: PropTypes.func,
-// };
 
 export default CommentModal;

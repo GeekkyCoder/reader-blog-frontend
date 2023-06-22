@@ -38,4 +38,4 @@ const blogsReducer = (state = INITIAL_STATE, action = {}) => {
   }
 };
 
-module.exports = blogsReducer;
+export default blogsReducer;
