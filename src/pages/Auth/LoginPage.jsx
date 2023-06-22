@@ -58,7 +58,9 @@ export const LoginPage = ({ handleShowAuth }) => {
 
     dispatch(FETCH_USER_START());
     try {
-      const {data} = await axios.post('https://reader-blogging-web.onrender.com/api/v1/auth/login',userObj)
+      const {data} = await axios.post('https://reader-blogging-web.onrender.com/api/v1/auth/login',userObj,{
+        withCredentials:true
+      })
       dispatch(FETCH_USER_SUCCESS(data));
       setSnackbarMessage("logged in successfully ✔");
       setShowSnackbar(true);
@@ -67,7 +69,6 @@ export const LoginPage = ({ handleShowAuth }) => {
         setShowSnackbar(false);
       }, 2000);
     } catch (err) {
-      console.log(err)
       dispatch(FETCH_USER_FAILED(err?.response?.data?.msg || 'failed to login'));
       setSnackbarMessage(err?.response?.data?.msg || 'failed to login');
       setShowSnackbar(true);

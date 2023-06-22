@@ -75,7 +75,9 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
       dispatch(SET_IS_LOADING())
       const { data } = await axios.post(
         `https://reader-blogging-web.onrender.com/api/v1/comments/createComment?postId=${blogId} `,
-        commentObj
+        commentObj,{
+          withCredentials:true
+        }
       );
       dispatch(SET_SNACK_BAR_MESSAGE("comment posted"))
       dispatch(SET_IS_SNACKBAR_OPEN(true))

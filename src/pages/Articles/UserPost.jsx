@@ -13,7 +13,9 @@ const UserPost = () => {
     const fetchCurrentUserBlogs = async () => {
       setIsLoading(true);
       try {
-        const { data } = await axios.get("https://reader-blogging-web.onrender.com/api/v1/posts/user/posts");
+        const { data } = await axios.get("https://reader-blogging-web.onrender.com/api/v1/posts/user/posts",{
+          withCredentials:true
+        });
         setUserPosts(data?.posts);
         setIsLoading(false);
         setError(false);

@@ -18,7 +18,7 @@ const VerifyPage = () => {
     const verifyToken = async () => {
       setLoading(true);
       try {
-        const { data } = await axios.post('/api/v1/auth/verify-email', {
+        const { data } = await axios.post('https://reader-blogging-web.onrender.com/api/v1/auth/verify-email', {
           verificationToken: query.get('token'),
           email: query.get('email'),
         },{
@@ -27,8 +27,6 @@ const VerifyPage = () => {
         setLoading(false)
         setError(false)
       } catch (error) {
-        console.log(error)
-        // console.log(error.response);
         setError(true);
         setLoading(false);
       }

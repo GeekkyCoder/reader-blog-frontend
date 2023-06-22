@@ -73,7 +73,6 @@ const Articles = () => {
         );
         dispatch(FETCH_BLOGS_SUCCESS(data?.blogs));
       } catch (err) {
-        console.log(err);
         dispatch(FETCH_BLOGS_FAILED(err?.response?.data?.msg));
       }
     };

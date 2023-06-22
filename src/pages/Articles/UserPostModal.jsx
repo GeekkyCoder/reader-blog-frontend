@@ -45,7 +45,9 @@ const UserPostModal = ({
       setIsLoading(true);
       const { data } = await axios.patch(
         `https://reader-blogging-web.onrender.com/api/v1/posts/updatePost?postId=${postId}`,
-        postObj,
+        postObj,{
+          withCredentials:true
+        }
       );
       setIsSnackBarOpen(true);
       setSnackBarMessage("post updated successfully ✔");
@@ -59,7 +61,6 @@ const UserPostModal = ({
         setIsSnackBarOpen(false);
       }, 5000);
     } catch (err) {
-      console.log(err);
       setError(true);
       setSnackBarMessage("post update failed ❌");
       setIsLoading(false);
@@ -76,7 +77,9 @@ const UserPostModal = ({
       setIsLoading(true);
       try {
         const { data } = await axios.get(
-          `/api/v1/posts/currentUserPost?postId=${postId}`
+          `https://reader-blogging-web.onrender.com/api/v1/posts/currentUserPost?postId=${postId}`,{
+            withCredentials:true
+          }
         );
         setTitle(data?.userPost?.title);
         setDescription(data?.userPost?.description);

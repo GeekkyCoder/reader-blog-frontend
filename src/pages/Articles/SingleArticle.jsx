@@ -99,7 +99,9 @@ const SingleArticle = () => {
   useEffect(() => {
     const fetchSingleBlogPost = async () => {
       try {
-        const { data } = await axios.get(`https://reader-blogging-web.onrender.com/api/v1/posts/blogs?post=${blogId}`);
+        const { data } = await axios.get(`https://reader-blogging-web.onrender.com/api/v1/posts/blogs?post=${blogId}`,{
+          withCredentials:true
+        });
         setBlogPost(data?.post);
         setIsSnackBarOpen(true);
         setTimeout(() => {
@@ -120,7 +122,9 @@ const SingleArticle = () => {
     setIsLikeClicked(true);
     try {
       const { data } = await axios.patch(
-        `https://reader-blogging-web.onrender.com/api/v1/posts/likepost?post=${blogId}`
+        `https://reader-blogging-web.onrender.com/api/v1/posts/likepost?post=${blogId}`,{
+          withCredentials:true
+        }
       );
       setUpdatedPost(data?.post);
     } catch (err) {
@@ -132,7 +136,9 @@ const SingleArticle = () => {
     setIsLikeClicked(false);
     try {
       const { data } = await axios.patch(
-        `https://reader-blogging-web.onrender.com/api/v1/posts/unlikepost?post=${blogId}`
+        `https://reader-blogging-web.onrender.com/api/v1/posts/unlikepost?post=${blogId}`,{
+          withCredentials:true
+        }
       );
       setUpdatedPost(data?.post);
     } catch (err) {
@@ -145,7 +151,9 @@ const SingleArticle = () => {
       const getRestOfBlogPostsOfThisUser = async () => {
         try {
           const { data } = await axios.get(
-            `https://reader-blogging-web.onrender.com/api/v1/posts/getMoreUserPosts?postId=${blogId}&userId=${blogPost?.createdBy}`
+            `https://reader-blogging-web.onrender.com/api/v1/posts/getMoreUserPosts?postId=${blogId}&userId=${blogPost?.createdBy}`,{
+              withCredentials:true
+            }
           );
           setFilteredPosts(data.filteredPosts);
         } catch (err) {

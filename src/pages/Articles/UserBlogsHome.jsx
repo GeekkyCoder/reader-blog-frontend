@@ -102,7 +102,9 @@ const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
     );
     if (shouldDelete) {
       try {
-        await axios.delete(`https://reader-blogging-web.onrender.com/api/v1/posts/deletePost?post=${postId}`);
+        await axios.delete(`https://reader-blogging-web.onrender.com/api/v1/posts/deletePost?post=${postId}`,{
+          withCredentials:true
+        });
         setTimeout(() => {
           window.location.reload();
         }, 3000);
