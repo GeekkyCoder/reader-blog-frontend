@@ -21,7 +21,7 @@ import { LoadingButton } from "@mui/lab";
 import { CloseOutlined, Send } from "@mui/icons-material";
 
 import axios from "axios";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import {
   SET_IS_LOADING,
@@ -37,7 +37,6 @@ import {
   snackbarMessageActionSelector,
 } from "../../store/actions/actionSelector";
 
-
 const drawerBleeding = 56;
 
 const Root = styled("div")(({ theme }) => ({
@@ -48,15 +47,13 @@ const Root = styled("div")(({ theme }) => ({
       : theme.palette.background.default,
 }));
 
-function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
+function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId,setHasCommented,hasCommented }) {
   const [content, setContent] = useState("");
   const [comments, setComments] = useState([]);
 
+  const dispatch = useDispatch();
 
-  const dispatch = useDispatch()
-  
   const actionIsLoading = useSelector(loadingActionSelector);
-  const actionSnackBarMessage = useSelector(snackbarMessageActionSelector);
   const actionIsSnackBarOpen = useSelector(isSnackBarOpenActionSelector);
   const actionErrorSelector = useSelector(errorActionSelector);
 
@@ -72,53 +69,46 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
     };
 
     try {
-      dispatch(SET_IS_LOADING())
+      dispatch(SET_IS_LOADING());
       const { data } = await axios.post(
         `https://reader-blogging-web.onrender.com/api/v1/comments/createComment?postId=${blogId} `,
-        commentObj,{
-          withCredentials:true
+        commentObj,
+        {
+          withCredentials: true,
         }
       );
-      dispatch(SET_SNACK_BAR_MESSAGE("comment posted"))
-      dispatch(SET_IS_SNACKBAR_OPEN(true))
+      setHasCommented(prevState => !prevState);
+      dispatch(SET_SNACK_BAR_MESSAGE("comment posted"));
+      dispatch(SET_IS_SNACKBAR_OPEN(true));
       setTimeout(() => {
-        dispatch(SET_IS_SNACKBAR_OPEN(false))
-      },5000);
+        dispatch(SET_IS_SNACKBAR_OPEN(false));
+      }, 5000);
     } catch (err) {
-      dispatch(SET_ERROR(err?.response?.data?.msg || "failed to comment"))
-      dispatch(SET_IS_SNACKBAR_OPEN(true))
-      dispatch(SET_SNACK_BAR_MESSAGE(err?.response?.data?.msg || "failed to comment"))
+      dispatch(SET_ERROR(err?.response?.data?.msg || "failed to comment"));
+      dispatch(SET_IS_SNACKBAR_OPEN(true));
+      dispatch(
+        SET_SNACK_BAR_MESSAGE(err?.response?.data?.msg || "failed to comment")
+      );
       setTimeout(() => {
-        dispatch(SET_IS_SNACKBAR_OPEN(false))
-      },5000);
+        dispatch(SET_IS_SNACKBAR_OPEN(false));
+      }, 5000);
     }
   };
 
   useEffect(() => {
     const fecthCommentsForThisPost = async () => {
-      dispatch(SET_IS_LOADING())
       try {
         const { data } = await axios.get(
-          `/api/v1/comments/allComments?post=${blogId}`
+          `https://reader-blogging-web.onrender.com/api/v1/comments/allComments?post=${blogId}`,{
+            withCredentials:true
+          }
         );
         setComments(data?.comments[0].comments);
-        dispatch(SET_IS_SNACKBAR_OPEN(true))
-        // dispatch(SET_SNACK_BAR_MESSAGE("✔"))
-        setTimeout(() => {
-          dispatch(SET_IS_SNACKBAR_OPEN(false))
-        },5000)
-      } catch (err) {
-        dispatch(SET_ERROR(true))
-        dispatch(SET_IS_SNACKBAR_OPEN(true))
-        // dispatch(SET_SNACK_BAR_MESSAGE(err?.response?.data?.msg || "failed to fetch comments for this post"))
-        setTimeout(() => {
-          dispatch(SET_IS_SNACKBAR_OPEN(false))
-        },5000)
-      }
+      } catch (err) {}
     };
 
     fecthCommentsForThisPost();
-  }, []);
+  }, [hasCommented, blogId]);
 
   return (
     <Box>
@@ -155,9 +145,10 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
               display={"flex"}
               alignItems={"center"}
               justifyContent={"space-between"}
+              my={"2em"}
             >
               <Typography
-                fontSize={"2rem"}
+                fontSize={{ xs: "1.2rem", sm: "2rem" }}
                 variant="p"
                 component={"p"}
                 fontWeight={800}
@@ -175,7 +166,7 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
             <Stack>
               <Box component={"form"} my={"1em"} onSubmit={handleCommentSubmit}>
                 <TextField
-                  sx={{ width: "60%" }}
+                  sx={{ width: "100%" }}
                   variant="outlined"
                   multiline
                   placeholder={"write a comment ? ✍"}
@@ -183,7 +174,7 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
                   onChange={handleCommentFieldChange}
                   name="content"
                 ></TextField>
-                <Box my={'1em'}>
+                <Box my={"1em"}>
                   <LoadingButton
                     loading={actionIsLoading}
                     type={"submit"}
@@ -217,6 +208,5 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId }) {
     </Box>
   );
 }
-
 
 export default CommentModal;

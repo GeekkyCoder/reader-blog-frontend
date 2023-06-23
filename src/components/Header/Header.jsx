@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -21,8 +21,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { SET_USER_LOGOUT } from "../../store/user/user.actions";
 
 import { TOGGLE_ISMODALOPEN } from "../../store/blogs/blogs.actions";
-import axios from 'axios'
-
+import axios from "axios";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,7 +40,9 @@ const Header = () => {
 
     if (redirectPath === "Logout") {
       try {
-        await axios.delete("/api/v1/auth/logout");
+        await axios.delete("https://reader-blogging-web.onrender.com/api/v1/auth/logout", {
+          withCredentials: true,
+        });
         dispatch(SET_USER_LOGOUT());
         setTimeout(() => {
           navigate("/");
@@ -49,33 +50,31 @@ const Header = () => {
 
         return;
       } catch (err) {
-        console.log(err)
+        console.log(err);
         return;
       }
     }
 
-    if (redirectPath === "my blogs") {
-      navigate('/content/user/blogs')
-      return
+    if (redirectPath === "My blogs") {
+      navigate("/content/user/blogs");
+      return;
     }
 
-    navigate(`${redirectPath.toLowerCase()}`);
+    if (redirectPath === "Profile") {
+      navigate("/profile");
+    }
   };
 
-  const handleRegisterClick = () => {
-    navigate("/auth");
-  };
+  const handleRegisterClick = () => {};
 
   const handleLogoClick = () => {
     navigate("/");
   };
 
   const handleWriteClick = () => {
-    navigate("/content")
+    navigate("/content");
     dispatch(TOGGLE_ISMODALOPEN(true));
   };
-
-  const menuItems = ["Profile", "Logout", "my blogs"];
 
   return (
     <AppBar position="sticky">
@@ -160,20 +159,22 @@ const Header = () => {
             </ButtonThemeProvider>
           )}
 
-          <Tooltip title={"Profile"}>
-            <IconButton
-              onClick={handleMenuClose}
-              sx={{ marginLeft: { xs: ".6em", sm: 0 } }}
-            >
-              <Avatar
-                src={
-                  currentUser?.user?.profileImage ||
-                  "https://svgsilh.com/svg/659651.svg"
-                }
-                alt="Remy Sharp"
-              ></Avatar>
-            </IconButton>
-          </Tooltip>
+          {currentUser && (
+            <Tooltip title={"profile settings"}>
+              <IconButton
+                onClick={handleMenuClose}
+                sx={{ marginLeft: { xs: ".6em", sm: 0 } }}
+              >
+                <Avatar
+                  src={
+                    currentUser?.user?.profileImage ||
+                    "https://svgsilh.com/svg/659651.svg"
+                  }
+                  alt="Remy Sharp"
+                ></Avatar>
+              </IconButton>
+            </Tooltip>
+          )}
 
           <Menu
             sx={{ mt: "45px" }}
@@ -189,11 +190,9 @@ const Header = () => {
             onClose={handleMenuClose}
             onClick={handleMenuClick}
           >
-            {menuItems.map((menuItem) => (
-              <MenuItem key={menuItem} onClick={handleMenuClose}>
-                {menuItem}
-              </MenuItem>
-            ))}
+            <MenuItem>Profile</MenuItem>
+            <MenuItem>My blogs</MenuItem>
+            <MenuItem>Logout</MenuItem>
           </Menu>
         </Box>
       </StyledToolbar>

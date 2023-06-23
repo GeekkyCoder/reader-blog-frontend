@@ -32,7 +32,14 @@ import UserPostModal from "./UserPostModal";
 
 import axios from "axios";
 
-const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
+const UserBlogsHome = ({
+  userPost,
+  error,
+  isSnackBarOpen,
+  setUserPosts,
+  setHasPostBeenEdited,
+  setIsPostDeleted,
+}) => {
   const [isEditButtonHovered, setIsEditButtonHovered] = useState(false);
   const [isDeleteButtonHoverd, setIsDeleteButtonHovered] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -54,7 +61,7 @@ const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
     setIsDeleteButtonHovered(false);
   };
 
-  const handleShowMore = (postId) => {
+  const handleShowMore = () => {
     setShowMore((prevState) => !prevState);
   };
 
@@ -102,12 +109,13 @@ const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
     );
     if (shouldDelete) {
       try {
-        await axios.delete(`https://reader-blogging-web.onrender.com/api/v1/posts/deletePost?post=${postId}`,{
-          withCredentials:true
-        });
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+        const { data } = await axios.delete(
+          `https://reader-blogging-web.onrender.com/api/v1/posts/deletePost?post=${postId}`,
+          {
+            withCredentials: true,
+          }
+        );
+        setIsPostDeleted((prevState) => !prevState);
       } catch (err) {
         console.log(err);
       }
@@ -119,6 +127,7 @@ const UserBlogsHome = ({ userPost, error, isSnackBarOpen }) => {
       <Box>
         {isEditModalOpen && (
           <UserPostModal
+            setHasPostBeenEdited={setHasPostBeenEdited}
             isEditModalOpen={isEditModalOpen}
             handleCancelClick={handleCancelClick}
             postId={userPost._id}

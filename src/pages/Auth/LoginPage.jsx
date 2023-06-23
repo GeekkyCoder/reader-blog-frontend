@@ -1,10 +1,8 @@
 import { useState } from "react";
 
-import { useNavigate } from "react-router-dom";
-
 import { FormContainer, InputField } from "./AuthStyles";
 
-import { Fade, Box, Snackbar, InputAdornment, Typography, Button, Stack } from "@mui/material";
+import { Box, Snackbar, InputAdornment, Typography, Button, Stack, Alert } from "@mui/material";
 
 import { LoadingButton } from "@mui/lab";
 
@@ -36,17 +34,16 @@ const defaultFormValues = {
   password: "",
 };
 
-export const LoginPage = ({ handleShowAuth }) => {
+export const LoginPage = ({ handleShowAuth,setShowAuthModal }) => {
   const [formFields, setFormFields] = useState(defaultFormValues);
   const [showPassword, setShowPassword] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  const error = useSelector(userErrorSelector);
   const isLoading = useSelector(userLoadingSelector);
-  
- const navigate = useNavigate()
+  const error = useSelector(userErrorSelector);
 
+  
   const dispatch = useDispatch();
 
   const handleLoginFormSubmit = async (e) => {
@@ -65,10 +62,11 @@ export const LoginPage = ({ handleShowAuth }) => {
       setSnackbarMessage("logged in successfully ✔");
       setShowSnackbar(true);
       setTimeout(() => {
-        navigate('/')
+        setShowAuthModal(false)
         setShowSnackbar(false);
       }, 2000);
     } catch (err) {
+      console.log(err)
       dispatch(FETCH_USER_FAILED(err?.response?.data?.msg || 'failed to login'));
       setSnackbarMessage(err?.response?.data?.msg || 'failed to login');
       setShowSnackbar(true);
@@ -92,13 +90,14 @@ export const LoginPage = ({ handleShowAuth }) => {
 
 
   return (
+    <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
     <FormContainer component={"form"} onSubmit={handleLoginFormSubmit}>
       <Snackbar
-        message={snackbarMessage}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        TransitionComponent={Fade}
         open={showSnackbar}
-      />
+      >
+        <Alert security={error ? "error" : 'success'}>{snackbarMessage}</Alert>
+        </Snackbar>
 
       <Typography
         variant="h3"
@@ -117,16 +116,9 @@ export const LoginPage = ({ handleShowAuth }) => {
       >
         LOGIN
       </Typography>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        TransitionComponent={Fade}
-        open={false}
-        // message={error ? "something went wrong" : "success"}
-      />
 
       <Box>
         <InputField
-          error={error ? true : false}
           required
           label="Email"
           placeholder=" Email"
@@ -146,7 +138,6 @@ export const LoginPage = ({ handleShowAuth }) => {
 
       <Box>
         <InputField
-          error={error ? true : false}
           required
           label="Password"
           type={showPassword ? "text" : "password"}
@@ -170,6 +161,7 @@ export const LoginPage = ({ handleShowAuth }) => {
 
       <Box>
         <LoadingButton 
+        
           size="large"
           startIcon={<Login />}
           sx={{
@@ -189,15 +181,15 @@ export const LoginPage = ({ handleShowAuth }) => {
           LOGIN
         </LoadingButton>
         <Stack direction={'column'} justifyContent={'center'} alignItems={'center'}>
-        <Typography m={'1em'}>
-        Dont Have An Account ?
+        <Typography m={'1em'} fontWeight={600} fontFamily={'cursive'}>
+        Dont Have An Account 👇 ?
         </Typography>
         <Button
         onClick={handleShowAuth}
          sx={{
-          display: { sm: "flex" },
-          width: { sm: "200px" },
-          margin: { sm: "auto" },
+          display: { xs: "flex" },
+          width: { xs: "200px" },
+          margin: { xs: "auto" },
         }}
         size="large"
         variant="outlined"
@@ -209,5 +201,6 @@ export const LoginPage = ({ handleShowAuth }) => {
       </Box>
 
     </FormContainer>
+    </Box>
   );
 };

@@ -9,8 +9,6 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-import { useDispatch, useSelector } from "react-redux";
-
 import { useNavigate } from "react-router-dom";
 
 import { LoadingButton } from "@mui/lab";
@@ -41,8 +39,6 @@ export const Signup = ({handleShowAuth}) => {
   const [isLoading,setIsLoading] = useState(false)
 
   const { name, email, password, confirmPassword } = formFields;
-
-  const navigate = useNavigate();
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -110,6 +106,7 @@ export const Signup = ({handleShowAuth}) => {
   };
 
   return (
+    <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
     <FormContainer component={"form"} onSubmit={handleFormSubmit}>
       <Snackbar
         message={snackbarMessage}
@@ -168,7 +165,6 @@ export const Signup = ({handleShowAuth}) => {
               </InputAdornment>
             ),
           }}
-          //   helperText="please provide a valid email"
         />
       </Box>
 
@@ -221,10 +217,10 @@ export const Signup = ({handleShowAuth}) => {
       <Box>
         <LoadingButton
           sx={{
-            display: { sm: "block" },
-            width: { sm: "200px" },
-            margin: { sm: "auto" },
-            marginTop: { sm: "2em" },
+            display: { xs: "block" },
+            width: { xs: "200px" },
+            mx: { xs: "auto" },
+            mt: { xs: "3em" },
           }}
           type="submit"
           loading={isLoading}
@@ -235,15 +231,15 @@ export const Signup = ({handleShowAuth}) => {
           Submit
         </LoadingButton>
         <Stack direction={'column'} justifyContent={'center'} alignItems={'center'}>
-        <Typography m={'1em'}>
-          Already Have An Account ?
+        <Typography my={'1.2em'} fontWeight={600} fontFamily={'cursive'}>
+          Already Have An Account 👇 ?
         </Typography>
         <Button 
         onClick={handleShowAuth}
          sx={{
-          display: { sm: "flex" },
-          width: { sm: "200px" },
-          margin: { sm: "auto" },
+          display: { xs: "flex" },
+          width: { xs: "200px" },
+          margin: { xs: "auto" },
         }}
         size="large"
         variant="outlined"
@@ -254,5 +250,6 @@ export const Signup = ({handleShowAuth}) => {
         </Stack>
       </Box>
     </FormContainer>
+    </Box>
   );
 };

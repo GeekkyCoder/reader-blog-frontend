@@ -68,8 +68,10 @@ const Profile = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.post(
-        "/api/v1/auth/uploadUserProfileImage",
-        formData
+        "https://reader-blogging-web.onrender.com/api/v1/auth/uploadUserProfileImage",
+        formData,{
+          withCredentials:true
+        }
       );
       setIsLoading(false);
       setFileChoosen(false);
@@ -77,7 +79,7 @@ const Profile = () => {
       setIsSnackBarOpen(true);
       setTimeout(() => {
         setIsSnackBarOpen(false);
-        window.location.reload(true);
+        window.location.reload();
       }, 3000);
       setError(false);
     } catch (err) {
@@ -104,7 +106,9 @@ const Profile = () => {
 
       dispatch(FETCH_USER_START());
       try {
-        const { data } = await axios.patch("/api/v1/auth/updateuser", userObj);
+        const { data } = await axios.patch("https://reader-blogging-web.onrender.com/api/v1/auth/updateuser", userObj,{
+          withCredentials:true
+        });
         dispatch(FETCH_USER_SUCCESS(data));
         setIsDrawerClose(false);
         setIsSnackBarOpen(true);

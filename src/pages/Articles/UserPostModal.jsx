@@ -24,6 +24,7 @@ const UserPostModal = ({
   isEditModalOpen,
   setIsEditModalOpen,
   handleCancelClick,
+  setHasPostBeenEdited
 }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -53,9 +54,9 @@ const UserPostModal = ({
       setSnackBarMessage("post updated successfully ✔");
       setIsLoading(false);
       setError(false);
+      setHasPostBeenEdited(prevState => !prevState)
       setTimeout(() => {
         setIsEditModalOpen(false);
-        window.location.reload();
       }, 3000);
       setTimeout(() => {
         setIsSnackBarOpen(false);
@@ -116,6 +117,7 @@ const UserPostModal = ({
       <Dialog
         sx={{ fontFamily: "cursive" }}
         open={isEditModalOpen}
+        fullScreen
         fullWidth={true}
         maxWidth="md"
       >

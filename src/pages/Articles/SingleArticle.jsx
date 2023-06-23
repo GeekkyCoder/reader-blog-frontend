@@ -16,8 +16,6 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-import { useSelector, useDispatch } from "react-redux";
-
 import Slider from "react-slick";
 
 import { useParams } from "react-router-dom";
@@ -25,20 +23,6 @@ import { useParams } from "react-router-dom";
 import "./article.css";
 
 import axios from "axios";
-
-// import {
-//   SET_IS_LOADING,
-//   SET_IS_SNACKBAR_OPEN,
-//   SET_ERROR,
-//   SET_SNACK_BAR_MESSAGE,
-// } from "../../store/actions/actions.actions";
-
-// import {
-//   errorActionSelector,
-//   isSnackBarOpenActionSelector,
-//   loadingActionSelector,
-//   snackbarMessageActionSelector,
-// } from "../../store/actions/actionSelector";
 
 import { formatDate } from "../../utils/convertToDate";
 
@@ -94,14 +78,21 @@ const SingleArticle = () => {
   const [isSnackBarOpen, setIsSnackBarOpen] = useState(false);
   const [isLikeClicked, setIsLikeClicked] = useState(false);
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [hasCommented, setHasCommented] = useState(false);
+
   const { blogId } = useParams();
+
+  const [newBlogId, setNewBlogId] = useState(blogId);
 
   useEffect(() => {
     const fetchSingleBlogPost = async () => {
       try {
-        const { data } = await axios.get(`https://reader-blogging-web.onrender.com/api/v1/posts/blogs?post=${blogId}`,{
-          withCredentials:true
-        });
+        const { data } = await axios.get(
+          `https://reader-blogging-web.onrender.com/api/v1/posts/blogs?post=${newBlogId}`,
+          {
+            withCredentials: true,
+          }
+        );
         setBlogPost(data?.post);
         setIsSnackBarOpen(true);
         setTimeout(() => {
@@ -116,19 +107,20 @@ const SingleArticle = () => {
       }
     };
     fetchSingleBlogPost();
-  }, [updatedPost]);
+  }, [updatedPost, newBlogId, hasCommented]);
 
   const handlePostlikeClick = async () => {
     setIsLikeClicked(true);
     try {
       const { data } = await axios.patch(
-        `https://reader-blogging-web.onrender.com/api/v1/posts/likepost?post=${blogId}`,{
-          withCredentials:true
+        `https://reader-blogging-web.onrender.com/api/v1/posts/likepost?post=${blogId}`,
+        {
+          withCredentials: true,
         }
       );
       setUpdatedPost(data?.post);
     } catch (err) {
-    console.log(err)
+      console.log(err);
     }
   };
 
@@ -136,8 +128,9 @@ const SingleArticle = () => {
     setIsLikeClicked(false);
     try {
       const { data } = await axios.patch(
-        `https://reader-blogging-web.onrender.com/api/v1/posts/unlikepost?post=${blogId}`,{
-          withCredentials:true
+        `https://reader-blogging-web.onrender.com/api/v1/posts/unlikepost?post=${blogId}`,
+        {
+          withCredentials: true,
         }
       );
       setUpdatedPost(data?.post);
@@ -151,8 +144,9 @@ const SingleArticle = () => {
       const getRestOfBlogPostsOfThisUser = async () => {
         try {
           const { data } = await axios.get(
-            `https://reader-blogging-web.onrender.com/api/v1/posts/getMoreUserPosts?postId=${blogId}&userId=${blogPost?.createdBy}`,{
-              withCredentials:true
+            `https://reader-blogging-web.onrender.com/api/v1/posts/getMoreUserPosts?postId=${newBlogId}&userId=${blogPost?.createdBy}`,
+            {
+              withCredentials: true,
             }
           );
           setFilteredPosts(data.filteredPosts);
@@ -163,17 +157,23 @@ const SingleArticle = () => {
 
       getRestOfBlogPostsOfThisUser();
     }
-  }, [blogPost]);
+  }, [blogPost, newBlogId]);
 
   const handleCommentDrawer = () => {
     setIsCommentModalOpen(true);
+  };
+
+  const handleClickOnPost = (postId) => {
+    setNewBlogId(postId);
   };
 
   return (
     <Box>
       {Object.keys(blogPost).length > 0 && (
         <CommentModal
-          blogId={blogPost?._id}
+          hasCommented={hasCommented}
+          setHasCommented={setHasCommented}
+          blogId={newBlogId}
           isCommentModalOpen={isCommentModalOpen}
           setIsCommentModalOpen={setIsCommentModalOpen}
         />
@@ -372,6 +372,7 @@ const SingleArticle = () => {
                         {filteredPosts.map((post) => {
                           return (
                             <Card
+                              onClick={() => handleClickOnPost(post._id)}
                               key={post._id}
                               maxWidth={250}
                               sx={{ height: "450px" }}

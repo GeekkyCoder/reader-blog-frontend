@@ -55,7 +55,7 @@ const tagsOptions = [
   "general",
 ];
 
-const ArticlesModals = () => {
+const ArticlesModals = ({ setFetchNewOnCreate }) => {
   const [isImageUpload, setIsImageUpload] = useState(false);
 
   const [postFields, setPostFields] = useState({
@@ -92,12 +92,17 @@ const ArticlesModals = () => {
 
     dispatch(SET_IS_LOADING());
     try {
-      await axios.post("https://reader-blogging-web.onrender.com/api/v1/posts/createPost", payload,{
-        withCredentials:true
-      });
+      await axios.post(
+        "https://reader-blogging-web.onrender.com/api/v1/posts/createPost",
+        payload,
+        {
+          withCredentials: true,
+        }
+      );
       dispatch(SET_SNACK_BAR_MESSAGE("posted"));
       setIsImageUpload(false);
       dispatch(SET_IS_SNACKBAR_OPEN(true));
+      setFetchNewOnCreate((prevStat) => !prevStat);
       setTimeout(() => {
         dispatch(SET_IS_SNACKBAR_OPEN(false));
       }, 3000);
@@ -174,6 +179,7 @@ const ArticlesModals = () => {
       <Dialog
         sx={{ fontFamily: "cursive" }}
         open={isModalOpen}
+        fullScreen
         fullWidth={true}
         maxWidth="lg"
         //   TransitionComponent={Transition}

@@ -56,7 +56,8 @@ const filterOptions = ["oldest", "newest"];
 const Articles = () => {
   const [tag, setTag] = useState("");
   const [filter, setFilter] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
+  const [fetchNewOnCreate, setFetchNewOnCreate] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -69,7 +70,10 @@ const Articles = () => {
       dispatch(FETCH_BLOGS_START());
       try {
         const { data } = await axios.get(
-          `https://reader-blogging-web.onrender.com/api/v1/posts/allPosts?tags=${tag}&sort=${filter}`
+          `https://reader-blogging-web.onrender.com/api/v1/posts/allPosts?tags=${tag}&sort=${filter}`,
+          {
+            withCredentials: true,
+          }
         );
         dispatch(FETCH_BLOGS_SUCCESS(data?.blogs));
       } catch (err) {
@@ -78,7 +82,7 @@ const Articles = () => {
     };
 
     fetchAllBlogs();
-  }, [tag, filter]);
+  }, [tag, filter, fetchNewOnCreate]);
 
   const handleClickOnBlog = (blogId) => {
     navigate(`/content/blog/${blogId}`);
@@ -86,7 +90,7 @@ const Articles = () => {
 
   return (
     <>
-      <ArticlesModals />
+      <ArticlesModals setFetchNewOnCreate={setFetchNewOnCreate} />
       <ArticleContainer p={{ xs: "0em", sm: "2em" }}>
         <FormContainer
           sx={{ my: "2em", px: { xs: "1em", sm: "2em" } }}
@@ -174,7 +178,6 @@ const Articles = () => {
                         alignItems={{ xs: "start", sm: "center" }}
                         display={"flex"}
                       >
-
                         <Box flex={5} order={{ xs: 2, sm: 1 }}>
                           <Typography
                             component={"h2"}
@@ -196,21 +199,36 @@ const Articles = () => {
                             my={"1em"}
                             direction={"row"}
                             alignItems={"center"}
-                            display={'flex'}
-                            justifyContent={'space-between'}
+                            display={"flex"}
+                            justifyContent={"space-between"}
                           >
                             <Chip
                               variant="filled"
                               label={blog.tags}
                               size="large"
                             />
-                            <Box display={'flex'} alignItems={'center'}>
-                              <Typography color={'GrayText'} fontSize={'15px'} >{formatDate(blog.createdAt)}</Typography>
-                            <Tooltip title={"save"} sx={{ ml: "1em",mr:"1em" }}>
-                              <IconButton>
-                                <BookmarkAddOutlined />
-                              </IconButton>
-                            </Tooltip>
+                            <Box
+                              alignSelf={"flex-end"}
+                              display={"flex"}
+                              alignItems={"center"}
+                              justifyContent={"space-between"}
+                            >
+                              <Typography
+                                display={{ xs: "none", sm: "block" }}
+                                color={"GrayText"}
+                                fontSize={"15px"}
+                              >
+                                {formatDate(blog.createdAt)}
+                              </Typography>
+
+                              <Tooltip
+                                title={"save"}
+                                sx={{ ml: "1em", mr: "1em" }}
+                              >
+                                <IconButton>
+                                  <BookmarkAddOutlined />
+                                </IconButton>
+                              </Tooltip>
                             </Box>
                           </Stack>
                         </Box>
@@ -234,6 +252,7 @@ const Articles = () => {
         ) : (
           <Skeleton />
         )}
+     {!isBlogsLoading && blogs.length === 0  && <Typography my={'1em'} variant="h3" component={'p'} fontWeight={800} textAlign={'center'}>No Blogs Found</Typography>}
       </ArticleContainer>
     </>
   );

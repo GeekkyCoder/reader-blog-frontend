@@ -18,8 +18,7 @@ import LandingPageImage3 from "../../Assets/landing-page-main-3.jpg";
 import "./slider.css";
 
 import axios from "axios";
-
-// import Typewriter from "typewriter-effect";
+import Auth from "../Auth/Auth";
 
 const sliderSettings = {
   dots: true,
@@ -38,6 +37,7 @@ const LandingPage = () => {
   const [unsplashImages, setUnsplashImages] = useState([
     { imageSrc: "", user: {} },
   ]);
+  const [showAuthModal,setShowAuthModal]  = useState(false)
 
   const navigate = useNavigate();
 
@@ -73,10 +73,17 @@ const LandingPage = () => {
     fetchImagesFromUnsplash();
   }, []);
 
+
+  const handleSignUpClick = () => {
+    navigate("/")
+    setShowAuthModal(true)
+  }
+
   const randomIndex = Math.floor(Math.random() * unsplashImages.length) || 0;
 
   return (
     <>
+    <Auth showAuthModal={showAuthModal} setShowAuthModal={setShowAuthModal}/>
       <Box
         sx={{
           backgroundImage: `url(
@@ -86,8 +93,8 @@ const LandingPage = () => {
           backgroundPosition: "center",
           backgroundBlendMode: "multiply",
           backgroundColor: "GrayText",
-          height:{xs:'150vh',sm:'800px'},
-          padding: "2em",
+          height:{xs:'140vh',sm:'800px'},
+          padding: {xs:"0em",sm:"1em"}
         }}
       >
         <Box
@@ -96,6 +103,7 @@ const LandingPage = () => {
             flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
             alignItems: "center",
+            padding:{xs:"1em",sm:"0em"}
           }}
         >
           <Box flex={2} sx={{ order: { xs: 2, sm: 1 } }}>
@@ -137,12 +145,12 @@ const LandingPage = () => {
             </Box>
 
             <ButtonsContainer
-              direction={"row"}
-              spacing={{ sm: 2, xs: 0 }}
+              direction={{xs:"column",sm:"row"}}
+              spacing={{xs:4,sm:2}}
               mt={"2em"}
             >
               <Button
-                sx={{ width: { xs: "100%", sm: "150px" } }}
+                sx={{ width: { xs: "200px", sm: "100px"}}}
                 variant="contained"
                 color="secondary"
                 onClick={handleBlogsClick}
@@ -152,26 +160,25 @@ const LandingPage = () => {
               {!currentUser && (
                 <Button
                   sx={{
-                    width: { xs: "100%", sm: "150px" },
-                    marginTop: { xs: "20px" },
+                    width: { xs: "200px", sm: "100px" },
+                    marginTop: { xs: "20px",sm:"0em" }
                   }}
                   variant="contained"
                   color="primary"
-                  onClick={() => navigate("/auth")}
+                  onClick={handleSignUpClick}
                 >
                   Sign up
                 </Button>
               )}
             </ButtonsContainer>
           </Box>
+
+
           <Box flex={1} sx={{ order: { xs: 1, sm: 2 } }}>
             <Slider className="slider-container" {...sliderSettings}>
               <Box>
                 <LazyLoadImage
-                  style={{
-                    borderRadius: { xs: 0, sm: "25px" },
-                    height: "500px",
-                  }}
+                 className="slide-image"
                   width={"100%"}
                   src={LandingPageImage}
                   alt="landing-page"
@@ -179,10 +186,7 @@ const LandingPage = () => {
               </Box>
               <Box>
                 <LazyLoadImage
-                  style={{
-                    borderRadius: { xs: 0, sm: "25px" },
-                    height: "500px",
-                  }}
+                  className="slide-image"
                   width={"100%"}
                   src={LandingPageImage2}
                   alt="landing-page"
@@ -190,10 +194,7 @@ const LandingPage = () => {
               </Box>
               <Box>
                 <LazyLoadImage
-                  style={{
-                    borderRadius: { xs: 0, sm: "25px" },
-                    height: "500px",
-                  }}
+                  className="slide-image"
                   width={"100%"}
                   src={LandingPageImage3}
                   alt="landing-page"

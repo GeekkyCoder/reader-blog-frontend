@@ -21,7 +21,6 @@ const Header = lazy(() => import("./components/Header/Header.jsx"));
 const LandingPage = lazy(() => import("./pages/landing/landingPage.jsx"));
 const Profile = lazy(() => import("./pages/profile/Profile.jsx"));
 const Content = lazy(() => import("./components/Content/Content.jsx"));
-const Auth = lazy(() => import("./pages/Auth/Auth.jsx"));
 const SingleArticle = lazy(() => import("./pages/Articles/SingleArticle.jsx"));
 const UserPost = lazy(() => import("./pages/Articles/UserPost.jsx"));
 const VerifyEmail = lazy(() => import("./pages/Auth/VerifyEmail.jsx"));
@@ -51,7 +50,6 @@ function App() {
         <Header />
         <Routes>
           <Route index element={<LandingPage />}></Route>
-          <Route path="/auth" element={<Auth />}></Route>
           <Route path="/user/verify-email" element={<VerifyEmail />}>
             {" "}
           </Route>
