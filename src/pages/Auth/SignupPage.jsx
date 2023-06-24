@@ -158,6 +158,7 @@ export const Signup = ({handleShowAuth}) => {
           onChange={handleFieldsChange}
           value={email}
           name="email"
+          helperText={'please add a dummy email for now, your account will automatically be verified, you just have to login with your credentials'}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -168,7 +169,7 @@ export const Signup = ({handleShowAuth}) => {
         />
       </Box>
 
-      <Box>
+      <Box    sx={{mt:'3em'}}>
         <InputField
           required
           label="Password"
