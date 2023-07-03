@@ -62,7 +62,7 @@ export const Signup = ({handleShowAuth}) => {
     setIsLoading(true)
     try {
       const { data } = await axios.post(
-        "https://reader-blogging-web.onrender.com/api/v1/auth/register",
+        "http://localhost:8000/api/v1/auth/register",
         userObj,{
           withCredentials:true
         }
