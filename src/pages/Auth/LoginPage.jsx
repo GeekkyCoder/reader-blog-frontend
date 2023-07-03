@@ -55,7 +55,7 @@ export const LoginPage = ({ handleShowAuth,setShowAuthModal }) => {
 
     dispatch(FETCH_USER_START());
     try {
-      const {data} = await axios.post('https://reader-blogging-web.onrender.com/api/v1/auth/login',userObj,{
+      const {data} = await axios.post('http://localhost:8000/api/v1/auth/login',userObj,{
         withCredentials:true
       })
       dispatch(FETCH_USER_SUCCESS(data));

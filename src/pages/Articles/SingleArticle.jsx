@@ -113,7 +113,7 @@ const SingleArticle = () => {
     setIsLikeClicked(true);
     try {
       const { data } = await axios.patch(
-        `https://reader-blogging-web.onrender.com/api/v1/posts/likepost?post=${blogId}`,
+        `http://localhost:8000/api/v1/posts/likepost?post=${blogId}`,
         {
           withCredentials: true,
         }
@@ -128,7 +128,7 @@ const SingleArticle = () => {
     setIsLikeClicked(false);
     try {
       const { data } = await axios.patch(
-        `https://reader-blogging-web.onrender.com/api/v1/posts/unlikepost?post=${blogId}`,
+        `http://localhost:8000/api/v1/posts/unlikepost?post=${blogId}`,
         {
           withCredentials: true,
         }
@@ -144,7 +144,7 @@ const SingleArticle = () => {
       const getRestOfBlogPostsOfThisUser = async () => {
         try {
           const { data } = await axios.get(
-            `https://reader-blogging-web.onrender.com/api/v1/posts/getMoreUserPosts?postId=${newBlogId}&userId=${blogPost?.createdBy}`,
+            `http://localhost:8000/api/v1/posts/getMoreUserPosts?postId=${newBlogId}&userId=${blogPost?.createdBy}`,
             {
               withCredentials: true,
             }

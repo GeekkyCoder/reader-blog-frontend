@@ -71,7 +71,7 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId,setHas
     try {
       dispatch(SET_IS_LOADING());
       const { data } = await axios.post(
-        `https://reader-blogging-web.onrender.com/api/v1/comments/createComment?postId=${blogId} `,
+        `http://localhost:8000/api/v1/comments/createComment?postId=${blogId} `,
         commentObj,
         {
           withCredentials: true,
@@ -99,7 +99,7 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId,setHas
     const fecthCommentsForThisPost = async () => {
       try {
         const { data } = await axios.get(
-          `https://reader-blogging-web.onrender.com/api/v1/comments/allComments?post=${blogId}`,{
+          `http://localhost:8000/api/v1/comments/allComments?post=${blogId}`,{
             withCredentials:true
           }
         );

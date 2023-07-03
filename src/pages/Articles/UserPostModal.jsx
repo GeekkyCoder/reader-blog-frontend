@@ -45,7 +45,7 @@ const UserPostModal = ({
     try {
       setIsLoading(true);
       const { data } = await axios.patch(
-        `https://reader-blogging-web.onrender.com/api/v1/posts/updatePost?postId=${postId}`,
+        `http://localhost:8000/api/v1/posts/updatePost?postId=${postId}`,
         postObj,{
           withCredentials:true
         }
@@ -78,7 +78,7 @@ const UserPostModal = ({
       setIsLoading(true);
       try {
         const { data } = await axios.get(
-          `https://reader-blogging-web.onrender.com/api/v1/posts/currentUserPost?postId=${postId}`,{
+          `http://localhost:8000/api/v1/posts/currentUserPost?postId=${postId}`,{
             withCredentials:true
           }
         );

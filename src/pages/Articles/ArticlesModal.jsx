@@ -93,7 +93,7 @@ const ArticlesModals = ({ setFetchNewOnCreate }) => {
     dispatch(SET_IS_LOADING());
     try {
       await axios.post(
-        "https://reader-blogging-web.onrender.com/api/v1/posts/createPost",
+        "http://localhost:8000/api/v1/posts/createPost",
         payload,
         {
           withCredentials: true,

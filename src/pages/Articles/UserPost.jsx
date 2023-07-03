@@ -23,7 +23,7 @@ const UserPost = () => {
       setIsLoading(true);
       try {
         const { data } = await axios.get(
-          "https://reader-blogging-web.onrender.com/api/v1/posts/user/posts",
+          "http://localhost:8000/api/v1/posts/user/posts",
           {
             withCredentials: true,
           }

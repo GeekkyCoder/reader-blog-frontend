@@ -110,7 +110,7 @@ const UserBlogsHome = ({
     if (shouldDelete) {
       try {
         const { data } = await axios.delete(
-          `https://reader-blogging-web.onrender.com/api/v1/posts/deletePost?post=${postId}`,
+          `http://localhost:8000/api/v1/posts/deletePost?post=${postId}`,
           {
             withCredentials: true,
           }

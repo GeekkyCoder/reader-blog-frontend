@@ -70,7 +70,7 @@ const Articles = () => {
       dispatch(FETCH_BLOGS_START());
       try {
         const { data } = await axios.get(
-          `https://reader-blogging-web.onrender.com/api/v1/posts/allPosts?tags=${tag}&sort=${filter}`,
+          `http://localhost:8000/api/v1/posts/allPosts?tags=${tag}&sort=${filter}`,
           {
             withCredentials: true,
           }
