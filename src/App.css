@@ -12,3 +12,6 @@
   -webkit-text-fill-color: transparent;
 }
 
+/* .scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+} */

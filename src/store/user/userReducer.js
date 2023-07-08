@@ -4,6 +4,8 @@ const INITIAL_STATE = {
   currentUser: null,
   isLoading: false,
   error: null,
+  users: null,
+  followers: null,
 };
 
 const userReducer = (state = INITIAL_STATE, action = {}) => {
@@ -31,6 +33,16 @@ const userReducer = (state = INITIAL_STATE, action = {}) => {
       return {
         ...state,
         currentUser: null,
+      };
+    case USER_ACTION_TYPES.SET_ALL_USERS:
+      return {
+        ...state,
+        users: payload,
+      };
+    case USER_ACTION_TYPES.SET_USER_FOLLOWERS:
+      return {
+        ...state,
+        followers: payload,
       };
     default:
       return state;

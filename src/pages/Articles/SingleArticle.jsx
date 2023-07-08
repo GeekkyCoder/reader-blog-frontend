@@ -88,7 +88,7 @@ const SingleArticle = () => {
     const fetchSingleBlogPost = async () => {
       try {
         const { data } = await axios.get(
-          `https://reader-blogging-web.onrender.com/api/v1/posts/blogs?post=${newBlogId}`,
+          `http://localhost:3000/api/v1/posts/blogs?post=${newBlogId}`,
           {
             withCredentials: true,
           }

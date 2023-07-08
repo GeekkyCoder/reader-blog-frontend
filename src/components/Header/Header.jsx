@@ -40,7 +40,7 @@ const Header = () => {
 
     if (redirectPath === "Logout") {
       try {
-        await axios.delete("https://reader-blogging-web.onrender.com/api/v1/auth/logout", {
+        await axios.delete("http://localhost:8000/api/v1/auth/logout", {
           withCredentials: true,
         });
         dispatch(SET_USER_LOGOUT());
@@ -60,8 +60,14 @@ const Header = () => {
       return;
     }
 
+    if (redirectPath === "Settings") {
+      navigate("/profile/settings");
+      return;
+    }
+
     if (redirectPath === "Profile") {
-      navigate("/profile");
+      navigate(`/profile/${currentUser?.user?._id}`);
+      return;
     }
   };
 
@@ -192,6 +198,7 @@ const Header = () => {
           >
             <MenuItem>Profile</MenuItem>
             <MenuItem>My blogs</MenuItem>
+            <MenuItem>Settings</MenuItem>
             <MenuItem>Logout</MenuItem>
           </Menu>
         </Box>
