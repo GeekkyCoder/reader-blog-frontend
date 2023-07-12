@@ -126,6 +126,7 @@ const Articles = () => {
             blogs.map((blog) => {
               return (
                 <Container
+                  sx={{cursor:"pointer"}}
                   key={blog._id}
                   onClick={() => handleClickOnBlog(blog._id)}
                 >

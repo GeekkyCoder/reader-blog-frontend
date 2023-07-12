@@ -1,12 +1,11 @@
-import { Box, Typography, Tooltip, Divider, Avatar } from "@mui/material";
+import { Box, Typography, Tooltip, Divider, Avatar, Button } from "@mui/material";
 
 import { LoadingButton } from "@mui/lab";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const UserList = (props) => {
   const { profileImage, name, bio, _id } = props.user;
-  const { addToFollowing, loadingAction } = props;
+  const { addToFollowing } = props;
 
   const navigate = useNavigate();
 
@@ -14,17 +13,18 @@ const UserList = (props) => {
     navigate(`/profile/${userId}`);
   };
 
+
   return (
     <>
       <Box
         sx={{ cursor: "pointer"}}
-        onClick={() => handleClickOnUser(_id)}
         display={"flex"}
         my={"2em"}
         alignItems={"center"}
       >
         <Tooltip title={name}>
-          <Avatar
+          <Avatar 
+           onClick={() => handleClickOnUser(_id)}
             sx={{ width: 24, height: 24, alignSelf: "flex-start" }}
             flex={1}
             src={profileImage}
@@ -41,18 +41,19 @@ const UserList = (props) => {
             component={"p"}
             variant="p"
           >
-            {bio || "Things aren’t on fire. Fire is on things"}
+            {`${bio.slice(0,30)}...` || "Things aren’t on fire. Fire is on things"}
           </Typography>
         </Box>
-        <LoadingButton
-          loading={loadingAction}
+        <Tooltip title={`follow ${name} to see their posts`}>
+        <Button
           onClick={() => addToFollowing(_id)}
           flex={1}
           variant="outlined"
           color="inherit"
         >
           Follow
-        </LoadingButton>
+        </Button>
+        </Tooltip>
       </Box>
       <Divider />
     </>

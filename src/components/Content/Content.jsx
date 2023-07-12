@@ -60,6 +60,8 @@ const Content = () => {
     }
   };
 
+  console.log(`users: ${typeof(users)}`)
+
   return (
     <>
       <Snackbar
@@ -93,7 +95,7 @@ const Content = () => {
             overflow={"auto"}
             className="scrollbar-hidden"
           >
-            {users && (
+            { users.length > 0 && (
               <Typography
                 fontWeight={800}
                 component={"p"}
@@ -114,6 +116,7 @@ const Content = () => {
                   />
                 );
               })}
+              {!users.length && <Typography component={'p'} fontWeight={800} variant="p">No one to follow for now</Typography>}
           </Box>
         </Box>
       </Stack>

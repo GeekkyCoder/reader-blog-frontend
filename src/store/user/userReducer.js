@@ -4,8 +4,8 @@ const INITIAL_STATE = {
   currentUser: null,
   isLoading: false,
   error: null,
-  users: null,
-  followers: null,
+  users: [],
+  followers: [],
 };
 
 const userReducer = (state = INITIAL_STATE, action = {}) => {

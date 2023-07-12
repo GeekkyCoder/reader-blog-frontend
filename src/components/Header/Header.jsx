@@ -45,7 +45,8 @@ const Header = () => {
         });
         dispatch(SET_USER_LOGOUT());
         setTimeout(() => {
-          navigate("/");
+          // navigate("/");
+          window.location.href="/"
         }, 2000);
 
         return;
@@ -66,12 +67,10 @@ const Header = () => {
     }
 
     if (redirectPath === "Profile") {
-      navigate(`/profile/${currentUser?.user?._id}`);
+      navigate(`/profile/${currentUser?.user?._id || currentUser?.user?.userId }`);
       return;
     }
   };
-
-  const handleRegisterClick = () => {};
 
   const handleLogoClick = () => {
     navigate("/");
@@ -147,22 +146,6 @@ const Header = () => {
                 Write
               </Button>
             </Tooltip>
-          )}
-
-          {!currentUser && (
-            <ButtonThemeProvider theme={theme}>
-              <Tooltip title={"Register"}>
-                <SignUpButton
-                  sx={{ display: { xs: "none", sm: "block" } }}
-                  disableElevation
-                  variant="contained"
-                  color="primary"
-                  onClick={handleRegisterClick}
-                >
-                  Register
-                </SignUpButton>
-              </Tooltip>
-            </ButtonThemeProvider>
           )}
 
           {currentUser && (
