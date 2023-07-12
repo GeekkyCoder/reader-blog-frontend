@@ -60,7 +60,6 @@ const Content = () => {
     }
   };
 
-  console.log(`users: ${typeof(users)}`)
 
   return (
     <>
