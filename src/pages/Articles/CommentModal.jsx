@@ -34,7 +34,6 @@ import {
   errorActionSelector,
   isSnackBarOpenActionSelector,
   loadingActionSelector,
-  snackbarMessageActionSelector,
 } from "../../store/actions/actionSelector";
 
 const drawerBleeding = 56;
@@ -71,7 +70,7 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId,setHas
     try {
       dispatch(SET_IS_LOADING());
       const { data } = await axios.post(
-        `http://localhost:8000/api/v1/comments/createComment?postId=${blogId} `,
+        `https://reader-blogging-web.onrender.com/api/v1/comments/createComment?postId=${blogId} `,
         commentObj,
         {
           withCredentials: true,
@@ -99,7 +98,7 @@ function CommentModal({ isCommentModalOpen, setIsCommentModalOpen, blogId,setHas
     const fecthCommentsForThisPost = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:8000/api/v1/comments/allComments?post=${blogId}`,{
+          `https://reader-blogging-web.onrender.com/api/v1/comments/allComments?post=${blogId}`,{
             withCredentials:true
           }
         );

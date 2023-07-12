@@ -36,7 +36,6 @@ import {
 } from "../../store/actions/actions.actions";
 
 import {
-  actionSelector,
   errorActionSelector,
   isSnackBarOpenActionSelector,
   loadingActionSelector,
@@ -93,7 +92,7 @@ const ArticlesModals = ({ setFetchNewOnCreate }) => {
     dispatch(SET_IS_LOADING());
     try {
       await axios.post(
-        "http://localhost:8000/api/v1/posts/createPost",
+        "https://reader-blogging-web.onrender.com/api/v1/posts/createPost",
         payload,
         {
           withCredentials: true,

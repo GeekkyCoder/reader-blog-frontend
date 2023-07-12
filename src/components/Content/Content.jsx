@@ -34,7 +34,7 @@ const Content = () => {
     dispatch(SET_IS_LOADING());
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/followers",
+        "https://reader-blogging-web.onrender.com/api/v1/followers",
         { followerId: userToFollowId },
         {
           withCredentials: true,

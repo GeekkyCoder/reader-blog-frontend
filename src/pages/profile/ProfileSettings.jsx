@@ -19,12 +19,11 @@ import {
   Tooltip,
 } from "@mui/material";
 
-import { Close, Save, Error } from "@mui/icons-material";
+import { Close, Save } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 import {
   currentUserSelector,
   userLoadingSelector,
-  userTokenSelector,
 } from "../../store/user/userSelector";
 import { LoadingButton } from "@mui/lab";
 import {
@@ -68,7 +67,7 @@ const ProfileSettings = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/auth/uploadUserProfileImage",
+        "https://reader-blogging-web.onrender.com/api/v1/auth/uploadUserProfileImage",
         formData,{
           withCredentials:true
         }
@@ -106,7 +105,7 @@ const ProfileSettings = () => {
 
       dispatch(FETCH_USER_START());
       try {
-        const { data } = await axios.patch("http://localhost:8000/api/v1/auth/updateuser", userObj,{
+        const { data } = await axios.patch("https://reader-blogging-web.onrender.com/api/v1/auth/updateuser", userObj,{
           withCredentials:true
         });
         dispatch(FETCH_USER_SUCCESS(data));

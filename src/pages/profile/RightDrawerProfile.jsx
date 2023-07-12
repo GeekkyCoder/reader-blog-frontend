@@ -1,14 +1,11 @@
 import { useEffect,useState } from "react";
 
-import { MoreHoriz } from "@mui/icons-material";
 import {
   Avatar,
   Box,
   Stack,
-  SwipeableDrawer,
   Tooltip,
   Typography,
-  Button,
 } from "@mui/material";
 import Skeleton from "../../components/Skeleton/Skeleton";
 
@@ -22,7 +19,7 @@ const RightDrawerProfile = ({userId,handleClickOnUser}) => {
     const fetchUser = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:8000/api/v1/auth/user?userId=${userId}`,
+          `https://reader-blogging-web.onrender.com/api/v1/auth/user?userId=${userId}`,
           {
             withCredentials: true,
           }

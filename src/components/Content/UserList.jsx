@@ -1,6 +1,5 @@
 import { Box, Typography, Tooltip, Divider, Avatar, Button } from "@mui/material";
 
-import { LoadingButton } from "@mui/lab";
 import { useNavigate } from "react-router-dom";
 
 const UserList = (props) => {

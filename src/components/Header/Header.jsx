@@ -40,7 +40,7 @@ const Header = () => {
 
     if (redirectPath === "Logout") {
       try {
-        await axios.delete("http://localhost:8000/api/v1/auth/logout", {
+        await axios.delete("https://reader-blogging-web.onrender.com/api/v1/auth/logout", {
           withCredentials: true,
         });
         dispatch(SET_USER_LOGOUT());
