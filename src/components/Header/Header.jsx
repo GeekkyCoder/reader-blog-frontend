@@ -18,7 +18,7 @@ import { LogoText, SignUpButton, StyledToolbar, theme } from "./Header.styles";
 import { ThemeProvider as ButtonThemeProvider } from "@mui/material";
 import { currentUserSelector } from "../../store/user/userSelector";
 import { useSelector, useDispatch } from "react-redux";
-import { SET_USER_LOGOUT } from "../../store/user/user.actions";
+import { FETCH_ALL_USERS, SET_USER_LOGOUT } from "../../store/user/user.actions";
 
 import { TOGGLE_ISMODALOPEN } from "../../store/blogs/blogs.actions";
 import axios from "axios";
@@ -45,8 +45,7 @@ const Header = () => {
         });
         dispatch(SET_USER_LOGOUT());
         setTimeout(() => {
-          // navigate("/");
-          window.location.href="/"
+          navigate("/");
         }, 2000);
 
         return;

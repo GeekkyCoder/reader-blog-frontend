@@ -12,7 +12,6 @@ import { Box } from "@mui/material";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  FETCH_ALL_USERS,
   FETCH_USER_FAILED,
   FETCH_USER_START,
   FETCH_USER_SUCCESS,
@@ -30,7 +29,6 @@ const VerifyEmail = lazy(() => import("./pages/Auth/VerifyEmail.jsx"));
 
 function App() {
   const dispatch = useDispatch();
-  const followers = useSelector(userFollowerSelector)
 
   const fetchCurrentUser = async () => {
     dispatch(FETCH_USER_START());
@@ -44,28 +42,11 @@ function App() {
     }
   };
 
-  const fetchUsers = async () => {
-    try{
-    const {data} = await axios.get("https://reader-blogging-web.onrender.com/api/v1/auth/users",{
-      withCredentials:true
-    }) 
-    dispatch(FETCH_ALL_USERS(data.users))
-    }catch(err){
-     console.log(err)
-    }
-  }
 
   useEffect(() => {
     fetchCurrentUser();
   }, []);
 
-
-  useEffect(() => {
-    setTimeout(() => {
-      fetchUsers()
-    },3000)
-   },[followers])
- 
 
   return (
     <Suspense fallback={<LinearPorgressLine />}>

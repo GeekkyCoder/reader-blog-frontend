@@ -1,9 +1,9 @@
 import { Alert, Box, Snackbar, Stack, Typography } from "@mui/material";
 import Articles from "../../pages/Articles/Articles";
 import { useDispatch, useSelector } from "react-redux";
-import { allUserSelector } from "../../store/user/userSelector";
+import { allUserSelector, userFollowerSelector } from "../../store/user/userSelector";
 import axios from "axios";
-import { FETCH_USER_FOLLOWERS } from "../../store/user/user.actions";
+import { FETCH_ALL_USERS, FETCH_USER_FOLLOWERS } from "../../store/user/user.actions";
 import {
   SET_ERROR,
   SET_IS_LOADING,
@@ -18,6 +18,7 @@ import {
 } from "../../store/actions/actionSelector";
 
 import UserList from "./UserList";
+import { useEffect } from "react";
 // import { useEffect } from "react";
 
 const Content = () => {
@@ -29,6 +30,9 @@ const Content = () => {
   const snackBarMessage = useSelector(snackbarMessageActionSelector);
   const snackBarOpen = useSelector(isSnackBarOpenActionSelector);
   const loadingAction = useSelector(loadingActionSelector);
+
+  const followers = useSelector(userFollowerSelector)
+
 
   const addToFollowing = async (userToFollowId) => {
     dispatch(SET_IS_LOADING());
@@ -59,6 +63,23 @@ const Content = () => {
       }, 4000);
     }
   };
+
+  const fetchUsers = async () => {
+    try{
+    const {data} = await axios.get("https://reader-blogging-web.onrender.com/api/v1/auth/users",{
+      withCredentials:true
+    }) 
+    dispatch(FETCH_ALL_USERS(data?.users))
+    }catch(err){
+     console.log(err)
+    }
+  }
+
+  useEffect(() => {
+    fetchUsers()
+ },[followers])
+
+
 
 
   return (
