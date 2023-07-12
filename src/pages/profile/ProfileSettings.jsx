@@ -78,7 +78,6 @@ const ProfileSettings = () => {
       setIsSnackBarOpen(true);
       setTimeout(() => {
         setIsSnackBarOpen(false);
-        window.location.reload();
       }, 3000);
       setError(false);
     } catch (err) {
@@ -109,18 +108,13 @@ const ProfileSettings = () => {
           withCredentials:true
         });
         dispatch(FETCH_USER_SUCCESS(data));
-        setIsDrawerClose(false);
         setIsSnackBarOpen(true);
         setTimeout(() => {
           setIsSnackBarOpen(false);
-          // window.location.reload(true);
-          setIsDrawerClose(false);
-          navigate("/")
         }, 3000);
         setSnackbarMessage("profile information updated ✔");
       } catch (err) {
         dispatch(FETCH_USER_FAILED(err));
-        setIsDrawerClose(true);
         setSnackbarMessage("❌ could not update profile information");
         setIsSnackBarOpen(true);
         setTimeout(() => {
@@ -323,7 +317,7 @@ const ProfileSettings = () => {
                             sx={{ marginLeft: { xs: ".6em", sm: 0 } }}
                           >
                             <Avatar
-                              src={currentUser?.profileImage}
+                              src={currentUser?.user?.profileImage}
                               alt={"user-profile"}
                             ></Avatar>
                           </IconButton>
