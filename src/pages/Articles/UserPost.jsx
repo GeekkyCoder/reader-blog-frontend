@@ -45,7 +45,7 @@ const UserPost = () => {
       }
     };
     fetchCurrentUserBlogs();
-  }, [isPostDeleted, hasPostBeenEdited]);
+  }, [isPostDeleted, hasPostBeenEdited,currentUser]);
 
   return (
     <>
